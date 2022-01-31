@@ -54,7 +54,7 @@
                    <b-col cols="12" md="12">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo perteneciente al Jardin</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codJardinAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                  </b-row>
@@ -62,13 +62,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomJardinAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="regionAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   </b-row>
@@ -76,13 +76,13 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="comunaAgrega" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="provinciaAgrega" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>
@@ -98,13 +98,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomJardinEdita" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="regionEdita" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   </b-row>
@@ -112,13 +112,13 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="comunaEdita" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="provinciaEdita" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>
@@ -141,7 +141,7 @@
                       <th scope="col">N° Serie</th>
                       <th scope="col">Modelo</th>
                       <th scope="col">Marca</th>
-                      <th scope="col">Dependencia</th>
+                      <th scope="col">Funcionario</th>
                       <th scope="col">Zona</th>
                     </tr>
                   </thead>
@@ -173,7 +173,7 @@
                       <th scope="col">N° Serie</th>
                       <th scope="col">Modelo</th>
                       <th scope="col">Marca</th>
-                      <th scope="col">Dependencia</th>
+                      <th scope="col">Funcionario</th>
                       <th scope="col">Zona</th>
                       <th scope="col">Quitar Equipo</th>
                     </tr>

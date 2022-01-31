@@ -7,6 +7,7 @@
             <h1 v-if="pestaña === 'agregar'">Agrega un Funcionario</h1>
             <h1 v-if="pestaña === 'historial'">Historial del Funcionario</h1>
             <h1 v-if="pestaña === 'actuales'">Equipos actuales del Funcionario</h1>
+            <h1 v-if="pestaña === 'editar'">Editar Funcionario</h1>
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
@@ -54,7 +55,7 @@
                    <b-col cols="12" md="12">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Principal del Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codigoAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                  </b-row>
@@ -62,13 +63,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codFuncionarioAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   </b-row>
@@ -76,13 +77,13 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="correoAgrega" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="rutAgrega" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>
@@ -95,24 +96,16 @@
           <div class="card" v-if="pestaña === 'editar'">
                <div class="card-body">
                  <b-row>
-                   <b-col cols="12" md="12">
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Codigo Principal del Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                    </div>
-                  </b-col>
-                 </b-row>
-                 <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codFuncionarioEdita" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomFuncionarioEdita" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   </b-row>
@@ -120,13 +113,13 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="correoEdita" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>

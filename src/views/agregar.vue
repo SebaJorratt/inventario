@@ -13,19 +13,19 @@
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codEquipoAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="modeloAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="tipoAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                 </b-row>
@@ -33,13 +33,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">N° Serie Equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="serieAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
+                      <input type="text" class="form-control" id="marcaAgrega" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                 </b-row>
