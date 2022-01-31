@@ -8,50 +8,63 @@
       <div id="centro"> 
         <b-container>
           <div class="card">
-            <div class="card-body">
-              <b-row>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Codigo equipo</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Número de serie</label>
-                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Memoria Ram</label>
-                    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-                <b-col cols="12" md="6">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Marca del equipo</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </b-col>
-              </b-row><br>
-              <button type="submit" class="btn btn-primary">Agregar equipo</button>
+               <div class="card-body">
+                 <b-row>
+                  <b-col cols="12" md="4">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Codigo equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="4">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="4">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">N° Serie Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Estado de Equipo</label>
+                      <select v-model="selected" class="form-control">
+                        <option disabled value="">Seleccione un estado posible</option>
+                        <option>Bueno</option>
+                        <option>Regular</option>
+                        <option>Malo</option>
+                        <option>Baja</option>
+                      </select>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Condicion Equipo</label>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"></textarea>
+                    </div>
+                  </b-col>
+                </b-row>
+                <br>
+              <button type="submit" @click="agregarEquipo()" class="btn btn-primary">Agregar equipo</button>
             </div>
           </div>
         </b-container>
@@ -67,7 +80,23 @@ export default {
   components: {
     navbar,
   },
+  data() {
+      return {
+        selected: ''
+      }
+    },
+    created(){
+
+    },
+    methods: {
+      
+      agregarEquipo(){
+        console.log("holaxd")
+      }
+    }
 };
+
+
 </script>
 
 <style>

@@ -9,9 +9,10 @@
                      <b-collapse id="nav-collapse" is-nav>
                          <b-navbar-nav>
                             <b-nav-item :to="{name:'equipos'}">Lista de equipos</b-nav-item>
-                            <b-nav-item :to="{name:'agregar'}">Agregar</b-nav-item>
-                            <b-nav-item :to="{name:'estado'}">Estado de los equipos</b-nav-item>
+                            <b-nav-item :to="{name:'agregar'}">Agregar Equipo</b-nav-item>
+                            <b-nav-item :to="{name:'estado'}">Edicion de equipos</b-nav-item>
                             <b-nav-item :to="{name:'funcionario'}">Funcionarios</b-nav-item>
+                            <b-nav-item :to="{name:'dependencia'}">Dependencia</b-nav-item>
                         </b-navbar-nav>
                         <b-navbar-nav class="ml-auto">
                             <b-nav-form>

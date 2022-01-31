@@ -3,25 +3,25 @@
     <navbar />
     <b-container>
         <div class="menu">
-            <h1 v-if="pestaña === 'funcionarios'">Listado de funcionarios</h1>
-            <h1 v-if="pestaña === 'agregar'">Agrega un Funcionario</h1>
-            <h1 v-if="pestaña === 'historial'">Historial del Funcionario</h1>
-            <h1 v-if="pestaña === 'actuales'">Equipos actuales del Funcionario</h1>
+            <h1 v-if="pestaña === 'dependencias'">Listado de Dependencias</h1>
+            <h1 v-if="pestaña === 'agregar'">Agrega una Dependencia</h1>
+            <h1 v-if="pestaña === 'historial'">Historial de la Dependencia</h1>
+            <h1 v-if="pestaña === 'actuales'">Equipos actuales de la Dependencia</h1>
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
-              <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'funcionarios'">Agregar Funcionario</b-button>
+              <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'dependencias'">Agregar Dependencia</b-button>
             </div>
             <!-- Listado de Funcionarios -->
             <div class="row">
-                <table id='funcionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'funcionarios'">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'dependencias'">
                   <thead>
                     <tr>
-                      <th scope="col">Codigo</th>
+                      <th scope="col">Codigo Jardin</th>
                       <th scope="col">Nombre</th>
-                      <th scope="col">Codigo de Funcionario</th>
-                      <th scope="col">Rut</th>
-                      <th scope="col">Correo</th>
+                      <th scope="col">Region</th>
+                      <th scope="col">Comuna</th>
+                      <th scope="col">Providencia</th>
                       <th scope="col">Editar</th>
                       <th scope="col">Historial</th>
                       <th scope="col">Equipos Actuales</th>
@@ -53,7 +53,7 @@
                  <b-row>
                    <b-col cols="12" md="12">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Codigo Principal del Funcionario</label>
+                      <label for="exampleInputEmail1" class="form-label">Codigo perteneciente al Jardin</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </b-col>
@@ -61,13 +61,13 @@
                  <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
+                      <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
+                      <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </b-col>
@@ -75,19 +75,19 @@
                   <b-row>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
+                        <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
                         <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
+                        <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
                         <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="agregarFuncionario()" class="btn btn-success m-3">Agregar Funcionario</button>
+              <button type="submit" @click="agregarDependencia()" class="btn btn-success m-3">Agregar Dependencia</button>
               <button type="submit" @click="Volver()" class="btn btn-primary">Volver al Listado</button>
             </div>
           </div>
@@ -95,23 +95,15 @@
           <div class="card" v-if="pestaña === 'editar'">
                <div class="card-body">
                  <b-row>
-                   <b-col cols="12" md="12">
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Codigo Principal del Funcionario</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                    </div>
-                  </b-col>
-                 </b-row>
-                 <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
+                      <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
+                      <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </b-col>
@@ -119,62 +111,60 @@
                   <b-row>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
+                        <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
                         <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
+                        <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
                         <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                       </div>
                     </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="editarFuncionario()" class="btn btn-success m-3">Editar Funcionario</button>
+              <button type="submit" @click="editarDependencia()" class="btn btn-success m-3">Editar Dependencia</button>
               <button type="submit" @click="Volver()" class="btn btn-primary">Volver al Listado</button>
             </div>
           </div>
           <!-- Historial del funcionario -->
           <div class="row">
-            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de Funcionarios</b-button>
-          </div>
+              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
+            </div>
           <div class="row">
-              <div class="table-responsive">
-                  <table id='historialfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
-                    <thead>
-                      <tr>
-                        <th scope="col">Id</th>
-                        <th scope="col">Codigo Equipo</th>
-                        <th scope="col">Tipo de Equipo</th>
-                        <th scope="col">N° Serie</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Marca</th>
-                        <th scope="col">Dependencia</th>
-                        <th scope="col">Zona</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td scope="row">January</td>
-                        <td>1324343324</td>
-                        <td>$10asd0</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
-                      </tr>
-                    </tbody>
-                  </table>
-              </div>
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
+                  <thead>
+                    <tr>
+                      <th scope="col">Id</th>
+                      <th scope="col">Codigo Equipo</th>
+                      <th scope="col">Tipo de Equipo</th>
+                      <th scope="col">N° Serie</th>
+                      <th scope="col">Modelo</th>
+                      <th scope="col">Marca</th>
+                      <th scope="col">Dependencia</th>
+                      <th scope="col">Zona</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td scope="row">January</td>
+                      <td>1324343324</td>
+                      <td>$10asd0</td>
+                      <td>January</td>
+                      <td>January</td>
+                      <td>January</td>
+                      <td>January</td>
+                      <td>January</td>
+                    </tr>
+                  </tbody>
+                </table>
             </div>
           <!-- Equipos Actuales del funcionario -->  
           <div class="row">
-              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de Funcionarios</b-button>
+              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
             </div>
           <div class="row">
-                <table id='actualesfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
                   <thead>
                     <tr>
                       <th scope="col">Id</th>
@@ -222,11 +212,11 @@ export default {
         equiposAct: [],
         historial: [],
         funcionarios: [],
-        pestaña: 'funcionarios',
+        pestaña: 'dependencias',
       }
     },
     created(){
-      
+
     },
     methods: { //Vista inicial
       Acteditar(){
@@ -241,13 +231,13 @@ export default {
       agregar(){
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
-      agregarFuncionario(){
+      agregarDependencia(){
         console.log("Agregaaa")
       },
       Volver(){
-        this.pestaña = 'funcionarios'
+        this.pestaña = 'dependencias'
       }, //Vista de editar
-      editarFuncionario(){
+      editarDependencia(){
         console.log('Editateee')
       },
       quitar(){

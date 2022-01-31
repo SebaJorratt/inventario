@@ -39,7 +39,12 @@ const routes = [
     path: '/funcionario',
     name: 'funcionario',
     component: () => import('../views/funcionario.vue')
-  }
+  },
+  {
+    path: '/dependencia',
+    name: 'dependencia',
+    component: () => import('../views/dependencia.vue')
+  },
 ]
 
 const router = new VueRouter({
