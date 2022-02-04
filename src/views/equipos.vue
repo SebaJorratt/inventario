@@ -8,7 +8,7 @@
           <h1 v-else>Listado de Equipos</h1>
             
             <br>
-            <b-row v-if="pestaña !== 'editar'">
+            <b-row v-if="botones === 'si'">
               <b-col cols="12" md="4">
                 <div class="mb-3">
                   <b-button @click="MostrarEquiposAct()" class="btn-success botonmostrar">Equipos con dueño</b-button>
@@ -64,6 +64,7 @@
             <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'equiposNoAct'">
               <thead>
                 <tr>
+                  <th scope="col">ID</th>
                   <th scope="col">Tipo</th>
                   <th scope="col">N° Serie</th>
                   <th scope="col">Codigo</th>
@@ -71,12 +72,12 @@
                   <th scope="col">Modelo</th>
                   <th scope="col">Enviar Equipo</th>
                   <th scope="col">Mostrar Equipo</th>
-                  <th scope="col">Quitar Equipo</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td scope="row">January</td>
+                  <td>$10asd0</td>
                   <td>$10asd0</td>
                   <td>January</td>
                   <td>January</td>
@@ -86,9 +87,6 @@
                   </td>
                   <td>
                     <b-button @click="Acteditar()" class="btn-warning btn-sm">Mostrar Mas</b-button>
-                  </td>
-                  <td>
-                    <b-button @click="quitar()" class="btn-danger btn-sm">Quitar</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -103,7 +101,6 @@
                   <th scope="col">Marca</th>
                   <th scope="col">Modelo</th>
                   <th scope="col">Mostrar Equipo</th>
-                  <th scope="col">Quitar Equipo</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,9 +113,6 @@
                   <td>
                     <b-button @click="Acteditar()" class="btn-warning btn-sm">Mostrar Mas</b-button>
                   </td>
-                  <td>
-                    <b-button @click="quitar()" class="btn-danger btn-sm">Quitar</b-button>
-                  </td>
                 </tr>
               </tbody>
             </table>
@@ -129,19 +123,28 @@
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo equipo</label>
-                      <input type="text" class="form-control" id="codEquipoEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codEquipoEdita" aria-describedby="emailHelp" v-model="$v.codigo.$model">
+                      <p class="text-danger" v-if="$v.codigo.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Modelo equipo</label>
-                      <input type="text" class="form-control" id="modeloEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="modeloEdita" aria-describedby="emailHelp" v-model="$v.modelo.$model">
+                      <p class="text-danger" v-if="$v.modelo.$error">Es necesario ingresar un modelo</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
-                      <input type="text" class="form-control" id="tipoEdita" aria-describedby="emailHelp">
+                      <select class="form-control" v-model="$v.tipo.$model">
+                        <option disabled value="">Seleccione que tipo de equipo es</option>
+                        <option>Bueno</option>
+                        <option>Regular</option>
+                        <option>Malo</option>
+                        <option>Baja</option>
+                      </select>
+                      <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -149,13 +152,21 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">N° Serie Equipo</label>
-                      <input type="text" class="form-control" id="serieEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="serieEdita" aria-describedby="emailHelp" v-model="$v.serie.$model">
+                      <p class="text-danger" v-if="$v.serie.$error">Es necesario ingresar un número de serie</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
-                      <input type="text" class="form-control" id="marcaEdita" aria-describedby="emailHelp">
+                      <select class="form-control" v-model="$v.marca.$model">
+                        <option disabled value="">Seleccione la marca del equipo</option>
+                        <option>Bueno</option>
+                        <option>Regular</option>
+                        <option>Malo</option>
+                        <option>Baja</option>
+                      </select>
+                      <p class="text-danger" v-if="$v.marca.$error">Es necesario ingresar una marca</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -163,19 +174,20 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Estado de Equipo</label>
-                      <select v-model="selected" class="form-control">
+                      <select class="form-control" v-model="$v.estado.$model">
                         <option disabled value="">Seleccione un estado posible</option>
                         <option>Bueno</option>
                         <option>Regular</option>
                         <option>Malo</option>
                         <option>Baja</option>
                       </select>
+                      <p class="text-danger" v-if="$v.estado.$error">Es necesario indicar el estado del equipo</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Condicion Equipo</label>
-                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"></textarea>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.condicion.$model"></textarea>
                     </div>
                   </b-col>
                 </b-row>
@@ -200,13 +212,13 @@
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Numero del equipo</label>
-                      <input disabled type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input disabled type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.numero.$model">
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <select v-model="selected" class="form-control">
+                      <select class="form-control" v-model="$v.nombre.$model">
                         <option disabled value="">Seleccione un estado posible</option>
                         <option>Bueno</option>
                         <option>Regular</option>
@@ -218,7 +230,7 @@
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
-                      <select v-model="selected" class="form-control">
+                      <select class="form-control" v-model="$v.dueño.$model">
                         <option disabled value="">Seleccione un estado posible</option>
                         <option>Bueno</option>
                         <option>Regular</option>
@@ -250,6 +262,7 @@
 
 <script>
 import navbar from "../components/navbar.vue";
+import { required} from "vuelidate/lib/validators";
 export default {
   name: "about",
   components: {
@@ -261,8 +274,31 @@ export default {
         equiposBuenEstado: [],
         equiposMalEstado: [],
         pestaña: 'equiposact',
-        selected: ''
+        botones: 'si',
+        selected: '',
+        codigo: '',
+        modelo: '',
+        tipo: '',
+        serie: '',
+        marca: '',
+        estado: '',
+        condicion: '',
+        numero: '',
+        nombre: '',
+        dueño: ''
       }
+    },
+    validations:{
+      codigo:{required},
+      modelo:{required},
+      tipo:{required},
+      serie:{required},
+      marca:{required},
+      estado:{required},
+      condicion:{required},
+      numero:{required},
+      nombre:{required},
+      dueño:{required},
     },
     created(){
 
@@ -270,6 +306,7 @@ export default {
     methods: {
       Acteditar(){
         this.pestaña = 'editar'
+        this.botones = 'no'
       },
       quitar(){
         console.log("holaxd")
@@ -288,9 +325,11 @@ export default {
       },
       Volver(){
         this.pestaña = 'equiposact'
+        this.botones = 'si'
       },
       Enviar(){
         this.pestaña = 'enviar'
+        this.botones = 'no'
       },
       EnviarEquipo(){
 

@@ -45,6 +45,11 @@ const routes = [
     name: 'dependencia',
     component: () => import('../views/dependencia.vue')
   },
+  {
+    path: '/agregaUsuario',
+    name: 'agregaUsuario',
+    component: () => import('../views/agregarUsuario.vue')
+  }
 ]
 
 const router = new VueRouter({

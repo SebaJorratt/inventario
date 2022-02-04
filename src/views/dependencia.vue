@@ -47,14 +47,15 @@
                   </tbody>
                 </table>
             </div>
-          <!-- Agregar un funcionario -->
+          <!-- Agregar una dependencia -->
           <div class="card" v-if="pestaña === 'agregar'">
                <div class="card-body">
                  <b-row>
                    <b-col cols="12" md="12">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo perteneciente al Jardin</label>
-                      <input type="text" class="form-control" id="codJardinAgrega" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codJardinAgrega" aria-describedby="emailHelp" v-model="$v.codigo.$model">
+                      <p class="text-danger" v-if="$v.codigo.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
                  </b-row>
@@ -62,13 +63,20 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <input type="text" class="form-control" id="nomJardinAgrega" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomJardinAgrega" aria-describedby="emailHelp" v-model="$v.nomJardinAgrega.$model">
+                      <p class="text-danger" v-if="$v.nomJardinAgrega.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <input type="text" class="form-control" id="regionAgrega" aria-describedby="emailHelp">
+                      <select class="form-control" v-model="$v.regionAgrega.$model">
+                        <option disabled value="">Seleccione que tipo de equipo es</option>
+                        <option>Bueno</option>
+                        <option>Regular</option>
+                        <option>Malo</option>
+                        <option>Baja</option>
+                      </select>
                     </div>
                   </b-col>
                   </b-row>
@@ -76,13 +84,25 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
-                        <input type="text" class="form-control" id="comunaAgrega" aria-describedby="emailHelp">
+                        <select class="form-control" v-model="$v.comunaAgrega.$model">
+                          <option disabled value="">Seleccione que tipo de equipo es</option>
+                          <option>Bueno</option>
+                          <option>Regular</option>
+                          <option>Malo</option>
+                          <option>Baja</option>
+                        </select>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
-                        <input type="text" class="form-control" id="provinciaAgrega" aria-describedby="emailHelp">
+                        <label for="exampleInputEmail1" class="form-label">Provincia del Jardin</label>
+                        <select class="form-control" v-model="$v.provinciaAgrega.$model">
+                          <option disabled value="">Seleccione que tipo de equipo es</option>
+                          <option>Bueno</option>
+                          <option>Regular</option>
+                          <option>Malo</option>
+                          <option>Baja</option>
+                      </select>
                       </div>
                     </b-col>
                 </b-row>
@@ -91,20 +111,27 @@
               <button type="submit" @click="Volver()" class="btn btn-primary">Volver al Listado</button>
             </div>
           </div>
-          <!-- Editar un funcionario -->
+          <!-- Editar una dependencia-->
           <div class="card" v-if="pestaña === 'editar'">
                <div class="card-body">
                  <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <input type="text" class="form-control" id="nomJardinEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomJardinEdita" aria-describedby="emailHelp" v-model="$v.nomJardin.$model">
+                      <p class="text-danger" v-if="$v.nomJardin.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <input type="text" class="form-control" id="regionEdita" aria-describedby="emailHelp">
+                      <select class="form-control" v-model="$v.region.$model">
+                        <option disabled value="">Seleccione que tipo de equipo es</option>
+                        <option>Bueno</option>
+                        <option>Regular</option>
+                        <option>Malo</option>
+                        <option>Baja</option>
+                      </select>
                     </div>
                   </b-col>
                   </b-row>
@@ -112,13 +139,25 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
-                        <input type="text" class="form-control" id="comunaEdita" aria-describedby="emailHelp">
+                        <select class="form-control" v-model="$v.comuna.$model">
+                          <option disabled value="">Seleccione que tipo de equipo es</option>
+                          <option>Bueno</option>
+                          <option>Regular</option>
+                          <option>Malo</option>
+                          <option>Baja</option>
+                      </select>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Providencia del Jardin</label>
-                        <input type="text" class="form-control" id="provinciaEdita" aria-describedby="emailHelp">
+                        <label for="exampleInputEmail1" class="form-label">Provincia del Jardin</label>
+                        <select class="form-control" v-model="$v.provincia.$model">
+                          <option disabled value="">Seleccione que tipo de equipo es</option>
+                          <option>Bueno</option>
+                          <option>Regular</option>
+                          <option>Malo</option>
+                          <option>Baja</option>
+                      </select>
                       </div>
                     </b-col>
                 </b-row>
@@ -202,6 +241,7 @@
 
 <script>
 import navbar from "../components/navbar.vue";
+import { required} from "vuelidate/lib/validators";
 export default {
   name: "about",
   components: {
@@ -213,7 +253,27 @@ export default {
         historial: [],
         funcionarios: [],
         pestaña: 'dependencias',
+        codigo: '',
+        nomJardinAgrega: '',
+        regionAgrega: '',
+        comunaAgrega: '',
+        provinciaAgrega: '',
+        nomJardin: '',
+        region: '',
+        comuna: '',
+        provincia: ''
       }
+    },
+    validations:{
+      codigo:{required},
+      nomJardinAgrega:{required},
+      regionAgrega:{required},
+      comunaAgrega:{required},
+      provinciaAgrega:{required},
+      nomJardin:{required},
+      region:{required},
+      comuna:{required},
+      provincia:{required}
     },
     created(){
 

@@ -55,7 +55,8 @@
                    <b-col cols="12" md="12">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Principal del Funcionario</label>
-                      <input type="text" class="form-control" id="codigoAgrega" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codigoAgrega" aria-describedby="emailHelp" v-model="$v.codigo.$model">
+                      <p class="text-danger" v-if="$v.codigo.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
                  </b-row>
@@ -63,13 +64,15 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
-                      <input type="text" class="form-control" id="codFuncionarioAgrega" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.codigoFuncionarioAgregar.$model">
+                      <p class="text-danger" v-if="$v.codigoFuncionarioAgregar.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
-                      <input type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.nomFuncionarioAgregar.$model">
+                      <p class="text-danger" v-if="$v.nomFuncionarioAgregar.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
                   </b-row>
@@ -77,13 +80,15 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
-                        <input type="text" class="form-control" id="correoAgrega" aria-describedby="emailHelp">
+                        <input type="email" class="form-control" id="correoAgrega" aria-describedby="emailHelp" v-model="$v.correoAgregar.$model">
+                        <p class="text-danger" v-if="$v.correoAgregar.$error">Por favor ingrese un email</p>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
-                        <input type="text" class="form-control" id="rutAgrega" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="rutAgrega" aria-describedby="emailHelp" v-model="$v.rutAgregar.$model">
+                        <p class="text-danger" v-if="$v.rutAgregar.$error">Es necesario ingresar un rut</p>
                       </div>
                     </b-col>
                 </b-row>
@@ -99,13 +104,15 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
-                      <input type="text" class="form-control" id="codFuncionarioEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="codFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.codigoFuncionario.$model">
+                      <p class="text-danger" v-if="$v.codigoFuncionario.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
-                      <input type="text" class="form-control" id="nomFuncionarioEdita" aria-describedby="emailHelp">
+                      <input type="text" class="form-control" id="nomFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.nomFuncionario.$model">
+                      <p class="text-danger" v-if="$v.nomFuncionario.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
                   </b-row>
@@ -113,13 +120,15 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
-                        <input type="text" class="form-control" id="correoEdita" aria-describedby="emailHelp">
+                        <input type="email" class="form-control" id="correoEdita" aria-describedby="emailHelp" v-model="$v.correoAgregar.$model">
+                        <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un email</p>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
-                        <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp" v-model="$v.rutAgregar.$model">
+                        <p class="text-danger" v-if="$v.rutAgregar.$error">Es necesario ingresar un rut</p>
                       </div>
                     </b-col>
                 </b-row>
@@ -205,6 +214,7 @@
 
 <script>
 import navbar from "../components/navbar.vue";
+import { required, email } from "vuelidate/lib/validators";
 export default {
   name: "about",
   components: {
@@ -216,7 +226,27 @@ export default {
         historial: [],
         funcionarios: [],
         pestaña: 'funcionarios',
+        codigo: '',
+        codigoFuncionarioAgregar: '',
+        nomFuncionarioAgregar: '',
+        correoAgregar: '',
+        rutAgregar: '',
+        codigoFuncionario: '',
+        nomFuncionario: '',
+        correo: '',
+        rut: ''
       }
+    },
+    validations:{
+      codigo:{required},
+      codigoFuncionarioAgregar:{required},
+      nomFuncionarioAgregar:{required},
+      correoAgregar:{required, email},
+      rutAgregar:{required},
+      codigoFuncionario:{required},
+      nomFuncionario:{required},
+      correo:{required, email},
+      rut:{required}
     },
     created(){
       

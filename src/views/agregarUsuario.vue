@@ -1,9 +1,8 @@
 <template>
   <div class="configuracion">
     <navbar />
-    <p>{{$v.nombre}}</p>
       <div class="config">
-        <h1>Mi Perfil</h1>
+        <h1>Crear un nuevo usuario</h1>
         <div class="mt-5">
           <div id="centro"> 
             <b-container>
@@ -13,7 +12,7 @@
                       <b-col cols="12" md="6">
                         <div class="mb-3">
                           <label for="exampleInputEmail1" class="form-label">Nombre de Usuario</label>
-                          <input type="text" class="form-control" id="nombreUsuario" aria-describedby="emailHelp" v-model="$v.nombre.$model">
+                          <input type="text" class="form-control" id="newnombreUsuario" aria-describedby="emailHelp" v-model="$v.nombre.$model">
                           <p class="text-danger" v-if="!$v.nombre.required">Es necesario ingresar un nombre</p>
                           <p class="text-danger" v-if="!$v.nombre.minLength">El nombre debe tener un mínimo de 10 caracteres</p>
                         </div>
@@ -21,38 +20,34 @@
                       <b-col cols="12" md="6">
                         <div class="mb-3">
                           <label for="exampleInputEmail1" class="form-label">Correo de Usuario</label>
-                          <input type="email" class="form-control" id="correoUsuario" aria-describedby="emailHelp" v-model="$v.email.$model">
+                          <input type="email" class="form-control" id="newcorreoUsuario" aria-describedby="emailHelp" v-model="$v.email.$model">
                           <p class="text-danger" v-if="$v.email.$error">Por favor ingrese un email</p>
                         </div>
                       </b-col>
                     </b-row>
-                    <b-row v-if="contrasena === 'si'">
+                    <b-row>
                       <b-col cols="12" md="6">
                         <div class="mb-3">
-                          <label for="exampleInputEmail1" class="form-label">Contraseña Actual</label>
-                          <input type="password" class="form-control" id="serieAgrega" aria-describedby="emailHelp" v-model="$v.password.$model">
+                          <label for="exampleInputEmail1" class="form-label">Contraseña de Usuario</label>
+                          <input type="password" class="form-control" id="newserieAgrega" aria-describedby="emailHelp" v-model="$v.password.$model">
                           <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
                         </div>
                       </b-col>
                       <b-col cols="12" md="6">
                         <div class="mb-3">
-                          <label for="exampleInputEmail1" class="form-label">Nueva Contraseña</label>
-                          <input type="password" class="form-control" id="marcaAgrega" aria-describedby="emailHelp" v-model="$v.newPassword.$model">
-                          <p class="text-danger" v-if="!$v.newPassword.minLength">Mínimo de 6 caracteres</p>
+                            <label for="exampleInputEmail1" class="form-label">Tipo de usuario</label>
+                            <select class="form-control" v-model="$v.tipo.$model">
+                            <option disabled value="">Tipo de usuario</option>
+                                <option value="1">Administrador</option>
+                                <option value="0">Normal</option>
+                            </select>
                         </div>
                       </b-col>
                     </b-row><br>
                     <b-row>
-                      <b-col cols="12" md="6">
-                        <div class="mb-3">
-                          <b-button @click="mostrarContra()" class="btn-warning botonmostrar">{{contra}}</b-button>
-                        </div>
-                      </b-col>
-                      <b-col cols="12" md="6">
-                        <div class="mb-3">
-                          <b-button @click="editarUsuario()" class="btn-success botonmostrar">Modificar mis Datos</b-button>
-                        </div>
-                      </b-col>
+                        <b-container>
+                          <b-button @click="agregarUsuario()" class="btn-success botonmostrar">Agregar</b-button>
+                        </b-container>
                     </b-row>
                 </div>
               </div>
@@ -73,35 +68,24 @@ export default {
   },
   data() {
       return {
-        contrasena: 'no',
-        contra: 'Cambiar su contraseña',
         nombre: '',
         email: '',
         password: '',
-        newPassword: ''
+        tipo: ''
       }
     },
     validations:{
       nombre:{required, minLength: minLength(10)},
       email:{required,email},
-      password:{minLength: minLength(6)},
-      newPassword:{minLength: minLength(6)}
+      password:{required, minLength: minLength(6)},
+      tipo:{required}
     },
     created(){
 
     },
     methods: {
-      mostrarContra(){
-        if(this.contrasena === 'no'){
-          this.contrasena = 'si'
-          this.contra = 'No Cambiar contraseña'
-        }else{
-          this.contrasena = 'no'
-          this.contra = 'Cambiar su contraseña'
-        }
-      },
-      editarUsuario(){
-        console.log('enviar usuario editado')
+      agregarUsuario(){
+        console.log('enviar usuario agregado')
       }
     }
 };

@@ -10,13 +10,15 @@
             <img src="../assets/Logotipo_de_la_Junji.png" alt="" width="150px" class="imagen">  
         </div>
         <br>
-    
+        
         <!-- Login Form -->
-        <form>
-          <input type="text" id="login" class="second" name="login" placeholder="Nombre de usuario" >
-          <input type="password" id="password" class="third" name="login" placeholder="Contraseña" >
+        <form @submit.prevent="submit">
+          <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.email.$model" :class="{'is-invalid': $v.email.$error}">
+          <p class="text-danger" v-if="$v.email.$error">Por favor ingrese un email</p>
+          <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
+          <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
           <br>
-          <router-link to="/menu"><input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px"></router-link> 
+          <router-link to="/menu"><input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px" :disabled="$v.$invalid"></router-link> 
         </form>
     
         <!-- Remind Passowrd -->
@@ -29,9 +31,29 @@
 </template>
 
 <script>
-
+import { required, email, minLength } from "vuelidate/lib/validators";
 export default {
   name: 'inicio',
+  data(){
+    return{
+      email: '',
+      password: ''
+    }
+  },
+  validations:{
+    email:{required,email},
+    password:{required, minLength: minLength(6)}
+  },
+  methods: {
+    submit(){
+      this.$v.$touch()
+      if(this.$v.$invalid){
+        console.log('se genero un error')
+      }else{
+        console.log('todos los campos correctos')
+      }
+    }
+  }
 }
 </script>
 
@@ -126,7 +148,7 @@ h2.active {
 
 
 
-input[type=button], input[type=submit], input[type=reset]  {
+input[type=button], input[type=submit], input[type=reset]{
   background-color: #56baed;
   border: none;
   color: white;
@@ -150,7 +172,7 @@ input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
 
 
 
-input[type=text], input[type=password], input[type=number]  {
+input[type=text], input[type=password], input[type=number], input[type=email]  {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
