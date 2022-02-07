@@ -1,32 +1,30 @@
 <template>
     <div class="wrapper fadeInDown">
-      <div id="formContent">
-        <!-- Tabs Titles -->
-    
-        <!-- Icon -->
-        <br>
-        <div >
-        
-            <img src="../assets/Logotipo_de_la_Junji.png" alt="" width="150px" class="imagen">  
-        </div>
-        <br>
-        
-        <!-- Login Form -->
-        <form @submit.prevent="submit">
-          <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.email.$model" :class="{'is-invalid': $v.email.$error}">
-          <p class="text-danger" v-if="$v.email.$error">Por favor ingrese un email</p>
-          <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
-          <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
-          <br>
-          <router-link to="/menu"><input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px" :disabled="$v.$invalid"></router-link> 
-        </form>
-    
-        <!-- Remind Passowrd -->
-        <div id="formFooter">
-          <a class="underlineHover" href="#">¿Olvidaste tu contraseña?</a>
-        </div>
-    
-      </div>
+            <div class="card-body" id="formContent">
+              <!-- Tabs Titles -->
+          
+              <!-- Icon -->
+              <br>
+              <div >
+              
+                  <img src="../assets/Logotipo_de_la_Junji.png" alt="" width="150px" class="imagen">  
+              </div>
+              <br>
+              
+              <!-- Login Form -->
+              <form @submit.prevent="submit">
+                <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.email.$model" :class="{'is-invalid': $v.email.$error}">
+                <p class="text-danger" v-if="$v.email.$error">Por favor ingrese un email</p>
+                <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
+                <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
+                <br>
+                <router-link to="/menu"><input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px" :disabled="$v.$invalid"></router-link> 
+              </form>
+              <!-- Remind Passowrd -->
+              <div id="formFooter">
+                <a class="underlineHover" href="#">¿Olvidaste tu contraseña?</a>
+              </div>
+            </div>
     </div>
 </template>
 
@@ -68,17 +66,15 @@ body{
     background-color: #eee;
 }
 
+.abs-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
 .imagen{
     text-align: center;
-}
-
-html {
-  background-color: #56baed;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  height: 100vh;
 }
 
 a {
@@ -197,6 +193,19 @@ input[type=text], input[type=password], input[type=number], input[type=email]  {
 #icon {
   width:60%;
 }
-    </style>
+
+@media screen and (max-width: 480px){
+    #formContent{
+      border-radius: 10px 10px 10px 10px;
+      background: #fff;
+      padding: 30px;
+      width: 400%;
+      max-width: 350px;
+      padding: 0px;
+      box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+      text-align: center;
+    }
+}
+</style>
     
 
