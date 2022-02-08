@@ -122,7 +122,8 @@ export default {
       this.obtenerMarcas();
     },
     methods: {
-      
+      //Función que permite crear un nuevo equipo usa v-model y axios para enviar los datos al api
+      //algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       agregarEquipo(){
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){

@@ -79,12 +79,8 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <select class="form-control" v-model="$v.regionAgrega.$model">
-                        <option disabled value="">Seleccione que tipo de equipo es</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                      <select @change="cambioRegion(true)" class="form-control" if="regionAgrega" v-model="$v.regionAgrega.$model">
+                        <option v-for="i in regiones" :key="i.region">{{i.region}}</option>
                       </select>
                     </div>
                   </b-col>
@@ -106,11 +102,7 @@
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Provincia del Jardin</label>
                         <select class="form-control" v-model="$v.provinciaAgrega.$model">
-                          <option disabled value="">Seleccione que tipo de equipo es</option>
-                          <option>Bueno</option>
-                          <option>Regular</option>
-                          <option>Malo</option>
-                          <option>Baja</option>
+                          <option v-for="i in provincias" :key="i.provincia">{{i.provincia}}</option>
                       </select>
                       </div>
                     </b-col>
@@ -135,11 +127,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
                       <select class="form-control" v-model="$v.region.$model">
-                        <option disabled value="">Seleccione que tipo de equipo es</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                        <option v-for="i in regiones" :key="i.region">{{i.region}}</option>
                       </select>
                     </div>
                   </b-col>
@@ -254,6 +242,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
+
 export default {
   name: "about",
   components: {
@@ -270,8 +259,11 @@ export default {
         codigo: '',
         nomJardinAgrega: '',
         regionAgrega: '',
+        regiones: [],
         comunaAgrega: '',
+        comunas: [],
         provinciaAgrega: '',
+        provincias: [],
         nomJardin: '',
         region: '',
         comuna: '',
@@ -297,8 +289,10 @@ export default {
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarDependencias();
+      this.obtenerRegiones();
     },
     methods: { //Vista inicial
+    //Función que obtiene los datos de las dependencias y los enviar al arreglo que cargara la tabla
       listarDependencias(){
         this.axios.get('/dependenciasTabla')
           .then(res => {
@@ -308,24 +302,73 @@ export default {
             this.alerta('danger', 'No se han podido cargar a las dependencias');
           })
       },
+      //Función que obtiene todas las regiones
+      obtenerRegiones(){
+        this.axios.get('/regiones')
+          .then(res => {
+            this.regiones = res.data;
+            this.regionAgrega = res.data[0].region;
+            this.obtenerProvincias(true);
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar las regiones');
+          })
+      },
+      //Funcion que permite indicar cuando se cambia una region
+      cambioRegion(agregar){
+        if(agregar)this.obtenerProvincias(true);
+      },
+      //Funcion que carga las provincias de una region, si agregar es true carga las provincias de la vista agregar
+      obtenerProvincias(agregar){
+        if(agregar) var r = this.regionAgrega;
+        else var r = this.region;
+        this.axios.get(`/provincias/${r}`)
+          .then(res => {
+            this.provincias = res.data;        
+            if(agregar) this.provinciaAgrega = res.data[0].provincia;
+            else this.provincia = res.data[0].provincia;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar las provincias');
+          })
+      },
+      /*Funcion que carga las comunas de una provincia, si agregar es true carga las comunas de la vista agregar
+      obtenerComunas(agregar){
+        if(agregar) var r = this.regionAgrega;
+        else var r = this.region;
+        this.axios.get(`/provincias/${r}`)
+          .then(res => {
+            this.provincias = res.data;        
+            if(agregar) this.provinciaAgrega = res.data[0].provincia;
+            else this.provincia = res.data[0].provincia;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar las provincias');
+          })
+      },*/
+
+      //Función que determina la vista de edición de una dependencia
       Acteditar(){
         this.pestaña = 'editar'
         $('#dependencias').DataTable().destroy();
         $('#historialdependencias').DataTable().destroy();
         $("#actualesdependencias").DataTable().destroy();
       },
+      //Función que determina la vista del historial de una dependencia
       ActHistorial(){
         $('#dependencias').DataTable().destroy();
         $("#actualesdependencias").DataTable().destroy();
         $('#historialdependencias').DataTable()
         this.pestaña = 'historial'
       },
+      //Función que determina la vista de los equipos actuales de una dependencia
       EquiposActuales(){
         $('#dependencias').DataTable().destroy();
         $("#historialdependencias").DataTable().destroy();
         $('#actualesdependencias').DataTable()
         this.pestaña = 'actuales'
       },
+      //Función que determina la vista de agregar
       agregar(){
         $('#dependencias').DataTable().destroy();
         $('#historialdependencias').DataTable().destroy();
@@ -335,15 +378,19 @@ export default {
       agregarDependencia(){
         console.log("Agregaaa")
       },
+      //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         location.reload();
       }, //Vista de editar
+       //Función que permite editar a una dependencia
       editarDependencia(){
         console.log('Editateee')
       },
+      //Funcion que quita un equipo a una dependencia
       quitar(){
         console.log("holaxd")
       },
+      //Funciones de la alerta
       countDownChanged(dismissCountDown) {
         this.dismissCountDown = dismissCountDown
       },
@@ -357,6 +404,7 @@ export default {
       },
     },
     mounted(){
+      //Se cargan las tablas como Datatables del Jquery
       $('#dependencias').DataTable();
       $('#historialdependencias').DataTable();
       $("#actualesdependencias").DataTable()

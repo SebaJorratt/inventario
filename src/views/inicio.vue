@@ -34,16 +34,19 @@ export default {
   name: 'inicio',
   data(){
     return{
+      //Datos del Login
       email: '',
       password: ''
     }
   },
   validations:{
+    //Se validan el email y la contraseña con un minimo de letras
     email:{required,email},
     password:{required, minLength: minLength(6)}
   },
   methods: {
     submit(){
+      //Se revisa que se cumpla con los requerimientos y luego se busca al usuario en la base de datos
       this.$v.$touch()
       if(this.$v.$invalid){
         console.log('se genero un error')

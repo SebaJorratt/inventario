@@ -274,6 +274,7 @@ export default {
       this.listarFuncionarios();
     },
     methods: { //Vista inicial
+    //Función que obtiene los datos de los funcionarios y los enviar al arreglo que cargara la tabla
       listarFuncionarios(){
         this.axios.get('/funcionarios')
           .then(res => {
@@ -283,24 +284,28 @@ export default {
             this.alerta('danger', 'No se han podido cargar a los funcionarios');
           })
       },
+      //Función que determina la vista de edición de funcionarios
       Acteditar(){
         this.pestaña = 'editar'
         $('#funcionarios').DataTable().destroy();
         $('#historialfuncionarios').DataTable().destroy();
         $("#actualesfuncionarios").DataTable().destroy();
       },
+      //Función que determina la vista del historial de un funcionario
       ActHistorial(){
         $('#funcionarios').DataTable().destroy();
         $("#actualesfuncionarios").DataTable().destroy();
         $('#historialfuncionarios').DataTable()
         this.pestaña = 'historial'
       },
+      //Función que determina la vista de los equipos actuales de un funcionario
       EquiposActuales(){
         $('#funcionarios').DataTable().destroy();
         $("#historialfuncionarios").DataTable().destroy();
         $('#actualesfuncionarios').DataTable()
         this.pestaña = 'actuales'
       },
+      //Función que determina la vista de agregar
       agregar(){
         $('#funcionarios').DataTable().destroy();
         $('#historialfuncionarios').DataTable().destroy();
@@ -310,15 +315,19 @@ export default {
       agregarFuncionario(){
         console.log("Agregaaa")
       },
+      //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         location.reload();
-      }, //Vista de editar
+      }, 
+      //Función que permite editar a un funcionario
       editarFuncionario(){
         console.log('Editateee')
       },
+      //Funcion que quita un equipo a un funcionario
       quitar(){
         console.log("holaxd")
       },
+      //Funciones de la alerta
       countDownChanged(dismissCountDown) {
         this.dismissCountDown = dismissCountDown
       },
@@ -331,6 +340,7 @@ export default {
         this.showAlert();
       },
     },
+    //Se cargan las tablas como Datatables del Jquery
     mounted(){
       $('#funcionarios').DataTable();
       $('#historialfuncionarios').DataTable();

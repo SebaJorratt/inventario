@@ -377,6 +377,7 @@ export default {
             this.alerta('danger', 'No se han podido cargar las marcas');
         })
       },
+      //Funcion que obtiene los datos del equipo a editar
       obtenerEqpEditar(id){
         this.axios.get(`/datosEqp/${id}`)
           .then(res => {
@@ -400,6 +401,7 @@ export default {
             this.pestaña = 'equiposact';
           })
       },
+      //Funcion que quita un equipo a un funcionario
       quitar(id, estado){
         this.axios.put(`/actualizaHistorial/${id}`)
           .then(res => {
@@ -422,12 +424,14 @@ export default {
             })
           })
       },
+      //Muestra la vista de los equipos con un dueño actual
       MostrarEquiposAct(){
         this.pestaña = 'equiposact'
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable();
       },
+      //Ingresa los datos al arreglo que utilizara la tabla de Equipo con dueños
       listarEquiposAct(){
         this.axios.get('/equiposConDueno')
           .then(res => {
@@ -438,17 +442,20 @@ export default {
             this.alerta('danger', 'No se han podido cargar los equipos con Dueño');
           })
       },
+      //Llena el arreglo paralelo de correlativos de Equipos con dueño
       llenarCorrelativos(){
         for(var i = 0; i<this.equiposAct.length; i++){
           this.corrEquipos.push(this.equiposAct[i].corrEquipo)
         }
       },
+      //Define la vista de Equipos sin un dueño actual
       EquiposBuenEstado(){
         this.pestaña = 'equiposNoAct'
         $('#tablaConDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaSinDueño').DataTable();
       },
+      //Ingresa los datos al arreglo que utilizara la tabla de Equipo sin dueños
       listarEquiposBuenEstado(){
          this.axios.get('/equiposSinDueno')
           .then(res => {
@@ -458,12 +465,14 @@ export default {
             this.alerta('danger', 'No se han podido cargar los equipos sin Dueño');
           })
       },
+      //Define la vista de Equipos dados de baja
       EquiposMalEstado(){
         this.pestaña = 'equiposBaja'
         $('#tablaConDueño').DataTable().destroy();
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable();
       },
+      //Ingresa los datos al arreglo que utilizara la tabla de Equipo dados de baja
       listarEquiposMalEstado(){
         this.axios.get('/equiposBaja')
           .then(res => {
@@ -473,6 +482,7 @@ export default {
             this.alerta('danger', 'No se han podido cargar los equipos dados de baja');
         })
       },
+      //Función que permite editar un equipo algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       EditarEquipo(){
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
@@ -491,9 +501,11 @@ export default {
           this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
         }
       },
+      //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         location.reload();
       },
+      //Determina la vista para enviar un equipo a un nuevo dueño, recibe la id del equipo en cuestion
       Enviar(id){
         this.pestaña = 'enviar'
         this.botones = 'no'
@@ -502,6 +514,7 @@ export default {
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
       },
+      //Carga todos los jardines de la base de datos
       nombresJardin(){
         this.axios.get('/dependencias')
           .then(res => {
@@ -512,6 +525,7 @@ export default {
             this.alerta('danger', 'No se han podido cargar los nombres de los jardines');
         })
       },
+      //Carga todos los funcionarios de la base de datos
       listarDueños(){
         this.axios.get('/funcionarios')
           .then(res => {
@@ -522,6 +536,7 @@ export default {
             this.alerta('danger', 'No se han podido cargar los nombres de los Funcionarios');
         })
       },
+      //Función que envia un equipo con un nuevo dueño
       EnviarEquipo(){
         this.axios.post('/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero})
           .then(res => {
@@ -548,6 +563,7 @@ export default {
         this.dismissCountDown = this.dismissSecs
       }
     },
+    //Prepara las tablas como Datatables de JQuery
     mounted(){
       $('#tablaConDueño').DataTable();
       $('#tablaSinDueño').DataTable();
