@@ -10,7 +10,6 @@
                          <b-navbar-nav>
                             <b-nav-item :to="{name:'equipos'}">Lista de equipos</b-nav-item>
                             <b-nav-item :to="{name:'agregar'}">Agregar Equipo</b-nav-item>
-                            <b-nav-item :to="{name:'estado'}">Edicion de equipos</b-nav-item>
                             <b-nav-item :to="{name:'funcionario'}">Funcionarios</b-nav-item>
                             <b-nav-item :to="{name:'dependencia'}">Dependencia</b-nav-item>
                         </b-navbar-nav>

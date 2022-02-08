@@ -7,6 +7,15 @@
             <h1 v-if="pestaña === 'agregar'">Agrega una Dependencia</h1>
             <h1 v-if="pestaña === 'historial'">Historial de la Dependencia</h1>
             <h1 v-if="pestaña === 'actuales'">Equipos actuales de la Dependencia</h1>
+            <b-alert
+            :show="dismissCountDown"
+            dismissible
+            :variant="mensaje.color"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+          >
+            {{mensaje.texto}}
+          </b-alert> 
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
@@ -14,26 +23,26 @@
             </div>
             <!-- Listado de Funcionarios -->
             <div class="row">
-                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'dependencias'">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="dependencias" v-if="pestaña === 'dependencias'">
                   <thead>
                     <tr>
                       <th scope="col">Codigo Jardin</th>
                       <th scope="col">Nombre</th>
                       <th scope="col">Region</th>
-                      <th scope="col">Comuna</th>
                       <th scope="col">Providencia</th>
+                      <th scope="col">Comuna</th>
                       <th scope="col">Editar</th>
                       <th scope="col">Historial</th>
                       <th scope="col">Equipos Actuales</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td scope="row">January</td>
-                      <td>1324343324</td>
-                      <td>$10asd0</td>
-                      <td>January</td>
-                      <td>January</td>
+                    <tr v-for="i in dependencias" :key="i.codigo">
+                      <td scope="row">{{i.codJardin}}</td>
+                      <td>{{i.nomJardin}}</td>
+                      <td>{{i.region}}</td>
+                      <td>{{i.provincia}}</td>
+                      <td>{{i.comuna}}</td>
                       <td>
                         <b-button @click="Acteditar()" class="btn-warning btn-sm">Editar</b-button>
                       </td>
@@ -167,11 +176,10 @@
             </div>
           </div>
           <!-- Historial del funcionario -->
+          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
+          <b-button @click="ActHistorial()" class="botonAgregar btn btn-success" v-if="pestaña === 'historial'">Filtrar Datos de la tabla</b-button>
           <div class="row">
-              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
-            </div>
-          <div class="row">
-                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialdependencias" v-if="pestaña === 'historial'">
                   <thead>
                     <tr>
                       <th scope="col">Id</th>
@@ -199,11 +207,10 @@
                 </table>
             </div>
           <!-- Equipos Actuales del funcionario -->  
+          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
+          <b-button @click="EquiposActuales()" class="botonAgregar btn btn-success" v-if="pestaña === 'actuales'">Filtrar Datos de la tabla</b-button>
           <div class="row">
-              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
-            </div>
-          <div class="row">
-                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="actualesdependencias" v-if="pestaña === 'actuales'">
                   <thead>
                     <tr>
                       <th scope="col">Id</th>
@@ -242,6 +249,11 @@
 <script>
 import navbar from "../components/navbar.vue";
 import { required} from "vuelidate/lib/validators";
+import 'jquery/dist/jquery.min.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "datatables.net-dt/js/dataTables.dataTables";
+import "datatables.net-dt/css/jquery.dataTables.min.css";
+import $ from 'jquery'; 
 export default {
   name: "about",
   components: {
@@ -249,9 +261,11 @@ export default {
   },
   data() {
       return {
+        //Listas utilizadas para el manejo de tablas
         equiposAct: [],
         historial: [],
-        funcionarios: [],
+        dependencias: [],
+        //Pestaña que indica la vista actual
         pestaña: 'dependencias',
         codigo: '',
         nomJardinAgrega: '',
@@ -261,10 +275,15 @@ export default {
         nomJardin: '',
         region: '',
         comuna: '',
-        provincia: ''
+        provincia: '',
+        //Variables de las alertas
+        dismissSecs: 5,
+        dismissCountDown: 0,
+        mensaje: {color: '', texto: ''}
       }
     },
     validations:{
+      //Validaciones de los input
       codigo:{required},
       nomJardinAgrega:{required},
       regionAgrega:{required},
@@ -276,33 +295,97 @@ export default {
       provincia:{required}
     },
     created(){
-
+      //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
+      this.listarDependencias();
     },
     methods: { //Vista inicial
+      listarDependencias(){
+        this.axios.get('/dependenciasTabla')
+          .then(res => {
+            this.dependencias = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar a las dependencias');
+          })
+      },
       Acteditar(){
         this.pestaña = 'editar'
+        $('#dependencias').DataTable().destroy();
+        $('#historialdependencias').DataTable().destroy();
+        $("#actualesdependencias").DataTable().destroy();
       },
       ActHistorial(){
+        $('#dependencias').DataTable().destroy();
+        $("#actualesdependencias").DataTable().destroy();
+        $('#historialdependencias').DataTable()
         this.pestaña = 'historial'
       },
       EquiposActuales(){
+        $('#dependencias').DataTable().destroy();
+        $("#historialdependencias").DataTable().destroy();
+        $('#actualesdependencias').DataTable()
         this.pestaña = 'actuales'
       },
       agregar(){
+        $('#dependencias').DataTable().destroy();
+        $('#historialdependencias').DataTable().destroy();
+        $("#actualesdependencias").DataTable().destroy();
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarDependencia(){
         console.log("Agregaaa")
       },
       Volver(){
-        this.pestaña = 'dependencias'
+        location.reload();
       }, //Vista de editar
       editarDependencia(){
         console.log('Editateee')
       },
       quitar(){
         console.log("holaxd")
-      }
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs
+      },
+      alerta(color, texto){
+        this.mensaje.color = color;
+        this.mensaje.texto = texto;
+        this.showAlert();
+      },
+    },
+    mounted(){
+      $('#dependencias').DataTable();
+      $('#historialdependencias').DataTable();
+      $("#actualesdependencias").DataTable()
+    },
+    watch: {
+      dependencias(val) {
+        if(this.pestaña === 'dependencias'){
+          $('#dependencias').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#dependencias').DataTable()
+          });
+        }
+      },
+      historial(val) {
+        if(this.pestaña === 'historial'){
+          $('#historialdependencias').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#historialdependencias').DataTable()
+          });
+        }
+      },
+      equiposAct(val) {
+        if(this.pestaña === 'actuales'){
+          $('#actualesdependencias').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#actualesdependencias').DataTable()
+          });
+        }
+      },
     }
 };
 

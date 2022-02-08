@@ -31,11 +31,6 @@ const routes = [
     component: () => import('../views/configuracion')
   },
   {
-    path: '/estado',
-    name: 'estado',
-    component: () => import('../views/estado.vue')
-  },
-  {
     path: '/funcionario',
     name: 'funcionario',
     component: () => import('../views/funcionario.vue')

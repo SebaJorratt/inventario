@@ -8,6 +8,15 @@
             <h1 v-if="pestaña === 'historial'">Historial del Funcionario</h1>
             <h1 v-if="pestaña === 'actuales'">Equipos actuales del Funcionario</h1>
             <h1 v-if="pestaña === 'editar'">Editar Funcionario</h1>
+            <b-alert
+            :show="dismissCountDown"
+            dismissible
+            :variant="mensaje.color"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+          >
+            {{mensaje.texto}}
+          </b-alert>  
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
@@ -29,12 +38,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td scope="row">January</td>
-                      <td>1324343324</td>
-                      <td>$10asd0</td>
-                      <td>January</td>
-                      <td>January</td>
+                    <tr v-for="i in funcionarios" :key="i.codigo">
+                      <td scope="row">{{i.codigo}}</td>
+                      <td>{{i.nombre}}</td>
+                      <td>{{i.codFuncionario}}</td>
+                      <td>{{i.rut}}</td>
+                      <td>{{i.correo}}</td>
                       <td>
                         <b-button @click="Acteditar()" class="btn-warning btn-sm">Editar</b-button>
                       </td>
@@ -138,9 +147,8 @@
             </div>
           </div>
           <!-- Historial del funcionario -->
-          <div class="row">
-            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de Funcionarios</b-button>
-          </div>
+          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de Funcionarios</b-button>
+          <b-button @click="ActHistorial()" class="botonAgregar btn btn-success" v-if="pestaña === 'historial'">Filtrar Datos de la tabla</b-button>
           <div class="row">
               <div class="table-responsive">
                   <table id='historialfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
@@ -172,9 +180,8 @@
               </div>
             </div>
           <!-- Equipos Actuales del funcionario -->  
-          <div class="row">
-              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de Funcionarios</b-button>
-            </div>
+          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de Funcionarios</b-button>
+          <b-button @click="EquiposActuales()" class="botonAgregar btn btn-success" v-if="pestaña === 'actuales'">Filtrar Datos de la tabla</b-button>
           <div class="row">
                 <table id='actualesfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
                   <thead>
@@ -215,6 +222,11 @@
 <script>
 import navbar from "../components/navbar.vue";
 import { required, email } from "vuelidate/lib/validators";
+import 'jquery/dist/jquery.min.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "datatables.net-dt/js/dataTables.dataTables";
+import "datatables.net-dt/css/jquery.dataTables.min.css";
+import $ from 'jquery'; 
 export default {
   name: "about",
   components: {
@@ -222,22 +234,31 @@ export default {
   },
   data() {
       return {
+        //Listas utilizadas para el manejo de tablas
         equiposAct: [],
         historial: [],
         funcionarios: [],
+        //Pestaña que indica la vista actual
         pestaña: 'funcionarios',
+        //Variables para agregar un nuevo funcionario con v-model
         codigo: '',
         codigoFuncionarioAgregar: '',
         nomFuncionarioAgregar: '',
         correoAgregar: '',
         rutAgregar: '',
+        //Variables para editar un funcionario con v-model
         codigoFuncionario: '',
         nomFuncionario: '',
         correo: '',
-        rut: ''
+        rut: '',
+        //Variables de las alertas
+        dismissSecs: 5,
+        dismissCountDown: 0,
+        mensaje: {color: '', texto: ''}
       }
     },
     validations:{
+      //Validaciones de los input
       codigo:{required},
       codigoFuncionarioAgregar:{required},
       nomFuncionarioAgregar:{required},
@@ -249,33 +270,97 @@ export default {
       rut:{required}
     },
     created(){
-      
+      //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
+      this.listarFuncionarios();
     },
     methods: { //Vista inicial
+      listarFuncionarios(){
+        this.axios.get('/funcionarios')
+          .then(res => {
+            this.funcionarios = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar a los funcionarios');
+          })
+      },
       Acteditar(){
         this.pestaña = 'editar'
+        $('#funcionarios').DataTable().destroy();
+        $('#historialfuncionarios').DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
       },
       ActHistorial(){
+        $('#funcionarios').DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
+        $('#historialfuncionarios').DataTable()
         this.pestaña = 'historial'
       },
       EquiposActuales(){
+        $('#funcionarios').DataTable().destroy();
+        $("#historialfuncionarios").DataTable().destroy();
+        $('#actualesfuncionarios').DataTable()
         this.pestaña = 'actuales'
       },
       agregar(){
+        $('#funcionarios').DataTable().destroy();
+        $('#historialfuncionarios').DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarFuncionario(){
         console.log("Agregaaa")
       },
       Volver(){
-        this.pestaña = 'funcionarios'
+        location.reload();
       }, //Vista de editar
       editarFuncionario(){
         console.log('Editateee')
       },
       quitar(){
         console.log("holaxd")
-      }
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs
+      },
+      alerta(color, texto){
+        this.mensaje.color = color;
+        this.mensaje.texto = texto;
+        this.showAlert();
+      },
+    },
+    mounted(){
+      $('#funcionarios').DataTable();
+      $('#historialfuncionarios').DataTable();
+      $("#actualesfuncionarios").DataTable()
+    },
+    watch: {
+      funcionarios(val) {
+        if(this.pestaña === 'funcionarios'){
+          $('#funcionarios').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#funcionarios').DataTable()
+          });
+        }
+      },
+      historial(val) {
+        if(this.pestaña === 'historial'){
+          $('#historialfuncionarios').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#historialfuncionarios').DataTable()
+          });
+        }
+      },
+      equiposAct(val) {
+        if(this.pestaña === 'actuales'){
+          $('#actualesfuncionarios').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#actualesfuncionarios').DataTable()
+          });
+        }
+      },
     }
 };
 

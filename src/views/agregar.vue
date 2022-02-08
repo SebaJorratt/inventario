@@ -28,11 +28,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
                       <select class="form-control" v-model="$v.tipo.$model">
-                        <option disabled value="">Seleccione que tipo de equipo es</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                        <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
                       <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
                     </div>
@@ -50,11 +46,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
                       <select class="form-control" v-model="$v.marca.$model">
-                        <option disabled value="">Seleccione la marca del equipo</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                        <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
                       <p class="text-danger" v-if="$v.marca.$error">Es necesario ingresar una marca</p>
                     </div>
@@ -101,17 +93,21 @@ export default {
   },
   data() {
       return {
+        //Datos para agregar un nuevo equipo con v-model
         selected: '',
         codigo: '',
         modelo: '',
         tipo: '',
+        tipos: [],
         serie: '',
         marca: '',
+        marcas: [],
         estado: '',
         condicion: ''
       }
     },
     validations:{
+      //Validaciones de los input
       codigo:{required},
       modelo:{required},
       tipo:{required},
@@ -121,12 +117,58 @@ export default {
       condicion:{required}
     },
     created(){
-
+      //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
+      this.obtenerTipos();
+      this.obtenerMarcas();
     },
     methods: {
       
       agregarEquipo(){
-        console.log("holaxd")
+        this.$v.$touch()
+        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
+          this.axios.post('/agregaEquipo', {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, tipoEquipo: this.tipo, nomMarca: this.marca, estado: this.estado, condicion: this.condicion})
+            .then(res => {
+              Swal.fire(
+                'Se ha creado un nuevo equipo!',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+              //location.reload();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha podido crear el equipo',
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+        }
+      },
+      //Función que obtiene todos los tipos
+      obtenerTipos(){
+        this.axios.get('/tipos')
+          .then(res => {
+            this.tipos = res.data;
+            this.tipo = res.data[0].tipoEquipo;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar los tipos');
+        })
+      },
+      //Función que obtiene todos las marcas
+      obtenerMarcas(){
+        this.axios.get('/marcas')
+          .then(res => {
+            this.marcas = res.data;
+            this.marca = res.data[0].nomMarca;
+            this.estado = 'Bueno';
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar las marcas');
+        })
       }
     }
 };

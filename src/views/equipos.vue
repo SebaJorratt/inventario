@@ -18,17 +18,17 @@
             <br>
             <b-row v-if="botones === 'si'">
               <b-col cols="12" md="4">
-                <div class="mb-3">
+                <div class="mb-1">
                   <b-button @click="MostrarEquiposAct()" class="btn-success botonmostrar">Equipos con dueño</b-button>
                 </div>
               </b-col>
               <b-col cols="12" md="4">
-                <div class="mb-3">
+                <div class="mb-1">
                   <b-button @click="EquiposBuenEstado()" class="btn-succes btn-warning botonmostrar">Equipos sin dueño</b-button>
                 </div>
               </b-col>
               <b-col cols="12" md="4">
-                <div class="mb-3">
+                <div class="mb-1">
                   <b-button @click="EquiposMalEstado()" class="btn-danger botonmostrar">Equipos dados de Baja</b-button>
                 </div>
               </b-col>
@@ -62,7 +62,7 @@
                   <td>{{i.nombre}}</td>
                   <td>{{i.zona}}</td>
                   <td>
-                    <b-button @click="Acteditar()" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="Acteditar(i.codHistorial, true)" class="btn-warning btn-sm">Mostrar Mas</b-button>
                   </td>
                   <td>
                     <b-button @click="quitar(i.codHistorial, i.estado)" class="btn-danger btn-sm">Quitar</b-button>
@@ -96,7 +96,7 @@
                     <b-button @click="Enviar(i.corrEquipo)" class="btn-success btn-sm">Enviar Equipo</b-button>
                   </td>
                   <td>
-                    <b-button @click="Acteditar()" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm">Mostrar Mas</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -123,7 +123,7 @@
                   <td>{{i.nomMarca}}</td>
                   <td>{{i.modelo}}</td>
                   <td>
-                    <b-button @click="Acteditar()" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm">Mostrar Mas</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -150,11 +150,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
                       <select class="form-control" v-model="$v.tipo.$model">
-                        <option disabled value="">Seleccione que tipo de equipo es</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                        <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
                       <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
                     </div>
@@ -172,13 +168,9 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
                       <select class="form-control" v-model="$v.marca.$model">
-                        <option disabled value="">Seleccione la marca del equipo</option>
-                        <option>Bueno</option>
-                        <option>Regular</option>
-                        <option>Malo</option>
-                        <option>Baja</option>
+                        <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
-                      <p class="text-danger" v-if="$v.marca.$error">Es necesario ingresar una marca</p>
+                      <p class="text-danger" v-if="$v.marca.$error">Debe rellenar el campo marca</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -285,32 +277,41 @@ export default {
   },
   data() {
       return {
+        //Listas utilizadas para el manejo de tablas
         equiposAct: [],
         corrEquipos: [],
         equiposBuenEstado: [],
         equiposMalEstado: [],
+        //Pestaña que indica la vista actual
         pestaña: 'equiposact',
         botones: 'si',
         selected: '',
+        //Datos de editar
+        corr: '',
         codigo: '',
         modelo: '',
         tipo: '',
+        tipos: [],
         serie: '',
         marca: '',
+        marcas: [],
         estado: '',
         condicion: '',
         numero: '',
         zona: '',
         nombre: '',
+        //Arreglo para añadir los datos a los select
         nombres: [],
         dueño: '',
         dueños: [],
+        //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
         mensaje: {color: '', texto: ''}
       }
     },
     validations:{
+      //Validaciones de los input
       codigo:{required},
       modelo:{required},
       tipo:{required},
@@ -324,11 +325,14 @@ export default {
       dueño:{required},
     },
     created(){
+      //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarEquiposAct();
       this.listarEquiposBuenEstado();
       this.listarEquiposMalEstado();
       this.nombresJardin();
-      this.listarDueños()
+      this.listarDueños();
+      this.obtenerTipos();
+      this.obtenerMarcas();
     },
     methods: {
       alerta(color, texto){
@@ -336,12 +340,65 @@ export default {
         this.mensaje.texto = texto;
         this.showAlert();
       },
-      Acteditar(){
+      //Activamos la vista de editar
+      Acteditar(id, activo){
         this.pestaña = 'editar'
         this.botones = 'no'
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
+        //Obtenemos el correlativo del equipo, si estamos en la vista de Equipos con dueño (activo=true) tendremos que buscarlo en el arreglo paralelo por la posición
+        if(activo){
+          const index = this.equiposAct.findIndex(item => item.codHistorial == id);
+          var corrEqp = this.corrEquipos[index]
+        }else{
+          var corrEqp = id;
+        }
+        //Llamamos a la función que nos permite cargar los datos del equipo a editar
+        this.obtenerEqpEditar(corrEqp)
+      },
+      //Función que obtiene todos los tipos
+      obtenerTipos(){
+        this.axios.get('/tipos')
+          .then(res => {
+            this.tipos = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar los tipos');
+        })
+      },
+      //Función que obtiene todos las marcas
+      obtenerMarcas(){
+        this.axios.get('/marcas')
+          .then(res => {
+            this.marcas = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar las marcas');
+        })
+      },
+      obtenerEqpEditar(id){
+        this.axios.get(`/datosEqp/${id}`)
+          .then(res => {
+            this.corr = res.data[0].corrEquipo;
+            this.codigo = res.data[0].codEquipo;
+            this.modelo = res.data[0].modelo;
+            this.tipo = res.data[0].tipoEquipo;
+            this.serie = res.data[0].serie;
+            this.marca = res.data[0].nomMarca;
+            this.estado = res.data[0].estado;
+            this.condicion = res.data[0].condicion;
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido ingresar a los datos de este equipo',
+              footer: 'Posible error del sistema'
+            })
+            this.botones = 'si';
+            this.pestaña = 'equiposact';
+          })
       },
       quitar(id, estado){
         this.axios.put(`/actualizaHistorial/${id}`)
@@ -350,7 +407,19 @@ export default {
             console.log(index);
             this.equiposAct.splice(index, 1)
             this.corrEquipos.splice(index, 1)
-            console.log(this.corrEquipos);
+            Swal.fire(
+              'Se ha quitado un equipo al funcionario!',
+              'Seleccione Ok para continuar',
+              'success'
+            )
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido quitar el equipo a su funcionario',
+              footer: 'Posible error del sistema'
+            })
           })
       },
       MostrarEquiposAct(){
@@ -405,7 +474,22 @@ export default {
         })
       },
       EditarEquipo(){
-
+        this.$v.$touch()
+        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
+          this.axios.put(`/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca})
+            .then(res => {
+              Swal.fire(
+                'Se ha editado al equipo satisfactoriamente',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+            })
+            .catch(e => {
+              this.alerta('danger', 'No se ha logrado editar al equipo');
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+        }
       },
       Volver(){
         location.reload();
