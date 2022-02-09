@@ -45,13 +45,13 @@
                       <td>{{i.rut}}</td>
                       <td>{{i.correo}}</td>
                       <td>
-                        <b-button @click="Acteditar()" class="btn-warning btn-sm">Editar</b-button>
+                        <b-button @click="Acteditar(i.codigo)" class="btn-warning btn-sm">Editar</b-button>
                       </td>
                       <td>
-                        <b-button @click="ActHistorial()" class="btn-sm">Historial</b-button>
+                        <b-button @click="ActHistorial(i.codigo)" class="btn-sm">Historial</b-button>
                       </td>
                       <td>
-                        <b-button @click="EquiposActuales()" class="btn-success btn-sm">Equipos Actuales</b-button>
+                        <b-button @click="EquiposActuales(i.codigo)" class="btn-success btn-sm">Equipos Actuales</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -129,15 +129,15 @@
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
-                        <input type="email" class="form-control" id="correoEdita" aria-describedby="emailHelp" v-model="$v.correoAgregar.$model">
+                        <input type="email" class="form-control" id="correoEdita" aria-describedby="emailHelp" v-model="$v.correo.$model">
                         <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un email</p>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
-                        <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp" v-model="$v.rutAgregar.$model">
-                        <p class="text-danger" v-if="$v.rutAgregar.$error">Es necesario ingresar un rut</p>
+                        <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp" v-model="$v.rut.$model">
+                        <p class="text-danger" v-if="$v.rut.$error">Es necesario ingresar un rut</p>
                       </div>
                     </b-col>
                 </b-row>
@@ -147,8 +147,9 @@
             </div>
           </div>
           <!-- Historial del funcionario -->
-          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de Funcionarios</b-button>
-          <b-button @click="ActHistorial()" class="botonAgregar btn btn-success" v-if="pestaña === 'historial'">Filtrar Datos de la tabla</b-button>
+          <div class="row">
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de Funcionarios</b-button>
+          </div>
           <div class="row">
               <div class="table-responsive">
                   <table id='historialfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
@@ -165,23 +166,24 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td scope="row">January</td>
-                        <td>1324343324</td>
-                        <td>$10asd0</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
-                        <td>January</td>
+                      <tr v-for="i in historial" :key="i.codHistorial">
+                        <td scope="row">{{i.codHistorial}}</td>
+                        <td>{{i.codEquipo}}</td>
+                        <td>{{i.tipoEquipo}}</td>
+                        <td>{{i.serie}}</td>
+                        <td>{{i.modelo}}</td>
+                        <td>{{i.nomMarca}}</td>
+                        <td>{{i.nomJardin}}</td>
+                        <td>{{i.zona}}</td>
                       </tr>
                     </tbody>
                   </table>
               </div>
             </div>
           <!-- Equipos Actuales del funcionario -->  
-          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de Funcionarios</b-button>
-          <b-button @click="EquiposActuales()" class="botonAgregar btn btn-success" v-if="pestaña === 'actuales'">Filtrar Datos de la tabla</b-button>
+          <div class=row>
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de Funcionarios</b-button>
+          </div>
           <div class="row">
                 <table id='actualesfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
                   <thead>
@@ -198,17 +200,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td scope="row">January</td>
-                      <td>1324343324</td>
-                      <td>$10asd0</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
+                    <tr v-for="i in equiposAct" :key="i.codHistorial">
+                      <td scope="row">{{i.codHistorial}}</td>
+                      <td>{{i.codEquipo}}</td>
+                      <td>{{i.tipoEquipo}}</td>
+                      <td>{{i.serie}}</td>
+                      <td>{{i.modelo}}</td>
+                      <td>{{i.nomMarca}}</td>
+                      <td>{{i.nomJardin}}</td>
+                      <td>{{i.zona}}</td>
                       <td>
-                        <b-button @click="quitar()" class="btn-danger btn-sm">Quitar</b-button>
+                        <b-button @click="quitar(i.codHistorial)" class="btn-danger btn-sm">Quitar</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -247,6 +249,7 @@ export default {
         correoAgregar: '',
         rutAgregar: '',
         //Variables para editar un funcionario con v-model
+        codigoEditar: '',
         codigoFuncionario: '',
         nomFuncionario: '',
         correo: '',
@@ -284,22 +287,61 @@ export default {
             this.alerta('danger', 'No se han podido cargar a los funcionarios');
           })
       },
+      //Muestra el historial de equipos del funcionario
+      listarHistorial(){
+        this.axios.get(`/Histfuncionario/${this.codigoEditar}`)
+          .then(res => {
+            this.historial = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se ha logrado obtener el historial deseado');
+          })
+      },
+      //Lista los datos de los equipos de los que un funcionario es dueño
+      listarActuales(){
+        this.axios.get(`/Actfuncionario/${this.codigoEditar}`)
+          .then(res => {
+            this.equiposAct = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se ha logrado obtener los equipos que ocupa el funcionario');
+          })
+      },
       //Función que determina la vista de edición de funcionarios
-      Acteditar(){
+      Acteditar(codigo){
         this.pestaña = 'editar'
+        this.codigoEditar = codigo;
         $('#funcionarios').DataTable().destroy();
         $('#historialfuncionarios').DataTable().destroy();
         $("#actualesfuncionarios").DataTable().destroy();
+        this.cargarFuncionario();
       },
       //Función que determina la vista del historial de un funcionario
-      ActHistorial(){
+      ActHistorial(codigo){
+        $('#funcionarios').DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
+        $('#historialfuncionarios').DataTable()
+        this.pestaña = 'historial'
+        this.codigoEditar = codigo;
+        this.listarHistorial();
+      },
+      ActivaHistorial(){
         $('#funcionarios').DataTable().destroy();
         $("#actualesfuncionarios").DataTable().destroy();
         $('#historialfuncionarios').DataTable()
         this.pestaña = 'historial'
       },
       //Función que determina la vista de los equipos actuales de un funcionario
-      EquiposActuales(){
+      EquiposActuales(codigo){
+        $('#funcionarios').DataTable().destroy();
+        $("#historialfuncionarios").DataTable().destroy();
+        $('#actualesfuncionarios').DataTable()
+        this.pestaña = 'actuales'
+        this.codigoEditar = codigo;
+        this.listarActuales();
+      },
+      //Muestra la vista de los equipos actuales de este funcionario
+      ActActuales(){
         $('#funcionarios').DataTable().destroy();
         $("#historialfuncionarios").DataTable().destroy();
         $('#actualesfuncionarios').DataTable()
@@ -313,19 +355,119 @@ export default {
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarFuncionario(){
-        console.log("Agregaaa")
+        this.$v.$touch()
+        if(!this.$v.codigo.$invalid && !this.$v.codigoFuncionarioAgregar.$invalid && !this.$v.nomFuncionarioAgregar.$invalid && !this.$v.correoAgregar.$invalid && !this.$v.rutAgregar.$invalid){
+          this.axios.post('/agregaFuncionario', {codigo: this.codigo, nombre: this.nomFuncionarioAgregar, codFuncionario: this.codigoFuncionarioAgregar, correo: this.correoAgregar, rut: this.rutAgregar})
+            .then(res => {
+              if(res.data.sqlMessage){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido crear al funcionario ' + this.nomFuncionarioAgregar,
+                  footer: 'Ya existe un usuario con este codigo revise la lista de usuarios'
+                })
+              }else{
+              Swal.fire(
+                'Se ha creado un nuevo Funcionario, ' + this.nomFuncionarioAgregar + ' se agrego al sistema!',
+                'Seleccione Ok para continuar',
+                'success'
+              )}
+              //location.reload();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha podido crear al funcionario ' + this.nomFuncionarioAgregar,
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else if(!this.$v.correoAgregar.$invalid){
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+        }else{
+          this.alerta('danger', 'Ingrese un correo valido');
+        }
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         location.reload();
       }, 
+      //Carga los datos de un funcionario que se va a editar
+      cargarFuncionario(){
+        this.axios.get(`/funcionario/${this.codigoEditar}`)
+          .then(res => {
+            this.codigoFuncionario = res.data[0].codFuncionario;
+            this.nomFuncionario = res.data[0].nombre;
+            this.correo = res.data[0].correo;
+            this.rut = res.data[0].rut;
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido ingresar a los datos de este funcionario',
+              footer: 'Posible error del sistema'
+            })
+            this.pestaña = 'funcionario';
+          })
+      },
       //Función que permite editar a un funcionario
       editarFuncionario(){
-        console.log('Editateee')
+        console.log(this.codigoEditar);
+        this.$v.$touch()
+        if(!this.$v.codigoFuncionario.$invalid && !this.$v.nomFuncionario.$invalid && !this.$v.correo.$invalid && !this.$v.rut.$invalid){
+          this.axios.put(`/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut})
+            .then(res => {
+              if(res.data.sqlMessage){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido actualizar al funcionario ' + this.nomFuncionario,
+                  footer: 'Ya existe un funcionario con este codigo revise la lista de funcionarios'
+                })
+              }else{
+              Swal.fire(
+                'Se registraron los cambios del Funcionario, ' + this.nomFuncionario + ' actualización Realizada!',
+                'Seleccione Ok para continuar',
+                'success'
+              )}
+              //location.reload();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha podido actualizar al funcionario ' + this.nomFuncionario,
+                footer: 'Posible error del sistema'
+              })
+            })
+        }else if(!this.$v.correo.$invalid){
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+        }else{
+          this.alerta('danger', 'Ingrese un correo valido');
+        }
       },
       //Funcion que quita un equipo a un funcionario
-      quitar(){
-        console.log("holaxd")
+      quitar(id, estado){
+        this.axios.put(`/actualizaHistorial/${id}`)
+          .then(res => {
+            const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
+            console.log(index);
+            this.equiposAct.splice(index, 1)
+            Swal.fire(
+              'Se ha quitado un equipo al funcionario!',
+              'Seleccione Ok para continuar',
+              'success'
+            )
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido quitar el equipo a su funcionario',
+              footer: 'Posible error del sistema'
+            })
+          })
       },
       //Funciones de la alerta
       countDownChanged(dismissCountDown) {
