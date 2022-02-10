@@ -319,33 +319,18 @@ export default {
       //Función que determina la vista del historial de un funcionario
       ActHistorial(codigo){
         $('#funcionarios').DataTable().destroy();
-        $("#actualesfuncionarios").DataTable().destroy();
         $('#historialfuncionarios').DataTable()
         this.pestaña = 'historial'
         this.codigoEditar = codigo;
         this.listarHistorial();
       },
-      ActivaHistorial(){
-        $('#funcionarios').DataTable().destroy();
-        $("#actualesfuncionarios").DataTable().destroy();
-        $('#historialfuncionarios').DataTable()
-        this.pestaña = 'historial'
-      },
       //Función que determina la vista de los equipos actuales de un funcionario
       EquiposActuales(codigo){
         $('#funcionarios').DataTable().destroy();
-        $("#historialfuncionarios").DataTable().destroy();
         $('#actualesfuncionarios').DataTable()
         this.pestaña = 'actuales'
         this.codigoEditar = codigo;
         this.listarActuales();
-      },
-      //Muestra la vista de los equipos actuales de este funcionario
-      ActActuales(){
-        $('#funcionarios').DataTable().destroy();
-        $("#historialfuncionarios").DataTable().destroy();
-        $('#actualesfuncionarios').DataTable()
-        this.pestaña = 'actuales'
       },
       //Función que determina la vista de agregar
       agregar(){
@@ -364,7 +349,7 @@ export default {
                   icon: 'error',
                   title: 'Oops...',
                   text: 'No se ha podido crear al funcionario ' + this.nomFuncionarioAgregar,
-                  footer: 'Ya existe un usuario con este codigo revise la lista de usuarios'
+                  footer: 'Ya existe un funcionario con un dato repetido, revise la lista de funcionarios'
                 })
               }else{
               Swal.fire(
@@ -390,7 +375,10 @@ export default {
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
-        location.reload();
+        $("#historialfuncionarios").DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
+        this.pestaña = 'funcionarios'
+        this.listarFuncionarios();
       }, 
       //Carga los datos de un funcionario que se va a editar
       cargarFuncionario(){

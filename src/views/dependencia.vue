@@ -482,7 +482,11 @@ export default {
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
-        location.reload();
+        $("#historialfuncionarios").DataTable().destroy();
+        $("#actualesfuncionarios").DataTable().destroy();
+        this.pestaña = 'dependencias'
+        this.listarDependencias();
+        this.obtenerRegiones(true);
       }, 
       //Vista de editar
       //Función que se encarga de cargar los datos de la Dependencia a editar

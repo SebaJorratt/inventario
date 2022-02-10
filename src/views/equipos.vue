@@ -324,15 +324,13 @@ export default {
       nombre:{required},
       dueño:{required},
     },
-    async created(){
+    created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
-      await this.listarEquiposAct();
-      await this.listarEquiposBuenEstado();
-      await this.listarEquiposMalEstado();
-      await this.nombresJardin();
-      await this.listarDueños();
-      await this.obtenerTipos();
-      await this.obtenerMarcas();
+      this.listarEquiposAct();
+      this.nombresJardin();
+      this.listarDueños();
+      this.obtenerTipos();
+      this.obtenerMarcas();
     },
     methods: {
       alerta(color, texto){
@@ -425,11 +423,12 @@ export default {
           })
       },
       //Muestra la vista de los equipos con un dueño actual
-      async MostrarEquiposAct(){
+      MostrarEquiposAct(){
+        $('#tablaSinDueño').DataTable().destroy();
+        $('#tablaBajas').DataTable().destroy();
+        $('#tablaConDueño').DataTable();
         this.pestaña = 'equiposact'
-        await $('#tablaSinDueño').DataTable().destroy();
-        await $('#tablaBajas').DataTable().destroy();
-        await $('#tablaConDueño').DataTable().reload();
+        this.listarEquiposAct();
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo con dueños
       listarEquiposAct(){
@@ -449,11 +448,12 @@ export default {
         }
       },
       //Define la vista de Equipos sin un dueño actual
-      async EquiposBuenEstado(){
+      EquiposBuenEstado(){
+        $('#tablaConDueño').DataTable().destroy();
+        $('#tablaBajas').DataTable().destroy();
+        $('#tablaSinDueño').DataTable();
         this.pestaña = 'equiposNoAct'
-        await $('#tablaConDueño').DataTable().destroy();
-        await $('#tablaBajas').DataTable().destroy();
-        await $('#tablaSinDueño').DataTable().reload();
+        this.listarEquiposBuenEstado();
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo sin dueños
       listarEquiposBuenEstado(){
@@ -466,11 +466,12 @@ export default {
           })
       },
       //Define la vista de Equipos dados de baja
-      async EquiposMalEstado(){
+      EquiposMalEstado(){
+        $('#tablaConDueño').DataTable().destroy();
+        $('#tablaSinDueño').DataTable().destroy();
+        $('#tablaBajas').DataTable()
         this.pestaña = 'equiposBaja'
-        await $('#tablaConDueño').DataTable().destroy();
-        await $('#tablaSinDueño').DataTable().destroy();
-        await $('#tablaBajas').DataTable().reload();
+        this.listarEquiposMalEstado();
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo dados de baja
       listarEquiposMalEstado(){
@@ -503,7 +504,9 @@ export default {
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
-        location.reload();
+        this.pestaña = 'equiposact'
+        this.botones = 'si'
+        this.listarEquiposAct();
       },
       //Determina la vista para enviar un equipo a un nuevo dueño, recibe la id del equipo en cuestion
       Enviar(id){
