@@ -7,6 +7,7 @@
             <h1 v-if="pestaña === 'agregar'">Agrega una Dependencia</h1>
             <h1 v-if="pestaña === 'historial'">Historial de la Dependencia</h1>
             <h1 v-if="pestaña === 'actuales'">Equipos actuales de la Dependencia</h1>
+            <h1 v-if="pestaña === 'editar'">Editar Dependencia</h1>
             <b-alert
             :show="dismissCountDown"
             dismissible
@@ -26,8 +27,9 @@
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="dependencias" v-if="pestaña === 'dependencias'">
                   <thead>
                     <tr>
-                      <th scope="col">Codigo Jardin</th>
+                      <th scope="col">Codigo Dependencia</th>
                       <th scope="col">Nombre</th>
+                      <th scope="col">Encargado</th>
                       <th scope="col">Region</th>
                       <th scope="col">Providencia</th>
                       <th scope="col">Comuna</th>
@@ -40,17 +42,18 @@
                     <tr v-for="i in dependencias" :key="i.codigo">
                       <td scope="row">{{i.codJardin}}</td>
                       <td>{{i.nomJardin}}</td>
+                      <td scope="row">{{i.nombre}}</td>
                       <td>{{i.region}}</td>
                       <td>{{i.provincia}}</td>
                       <td>{{i.comuna}}</td>
                       <td>
-                        <b-button @click="Acteditar()" class="btn-warning btn-sm">Editar</b-button>
+                        <b-button @click="Acteditar(i.codJardin)" class="btn-warning btn-sm">Editar</b-button>
                       </td>
                       <td>
-                        <b-button @click="ActHistorial()" class="btn-sm">Historial</b-button>
+                        <b-button @click="ActHistorial(i.codJardin)" class="btn-sm">Historial</b-button>
                       </td>
                       <td>
-                        <b-button @click="EquiposActuales()" class="btn-success btn-sm">Equipos Actuales</b-button>
+                        <b-button @click="EquiposActuales(i.codJardin)" class="btn-success btn-sm">Equipos Actuales</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -60,11 +63,19 @@
           <div class="card" v-if="pestaña === 'agregar'">
                <div class="card-body">
                  <b-row>
-                   <b-col cols="12" md="12">
+                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo perteneciente al Jardin</label>
                       <input type="text" class="form-control" id="codJardinAgrega" aria-describedby="emailHelp" v-model="$v.codigo.$model">
                       <p class="text-danger" v-if="$v.codigo.$error">Es necesario ingresar un codigo</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
+                      <select class="form-control" v-model="$v.dueño.$model">
+                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                      </select>
                     </div>
                   </b-col>
                  </b-row>
@@ -90,18 +101,14 @@
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
                         <select class="form-control" v-model="$v.comunaAgrega.$model">
-                          <option disabled value="">Seleccione que tipo de equipo es</option>
-                          <option>Bueno</option>
-                          <option>Regular</option>
-                          <option>Malo</option>
-                          <option>Baja</option>
+                          <option v-for="i in comunas" :key="i.comuna">{{i.comuna}}</option>
                         </select>
                       </div>
                     </b-col>
                     <b-col cols="12" md="6">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Provincia del Jardin</label>
-                        <select class="form-control" v-model="$v.provinciaAgrega.$model">
+                        <select @change="cambioProvincia(true)" class="form-control" v-model="$v.provinciaAgrega.$model">
                           <option v-for="i in provincias" :key="i.provincia">{{i.provincia}}</option>
                       </select>
                       </div>
@@ -125,35 +132,35 @@
                   </b-col>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
-                      <select class="form-control" v-model="$v.region.$model">
-                        <option v-for="i in regiones" :key="i.region">{{i.region}}</option>
+                      <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
+                      <select class="form-control" v-model="$v.dueño.$model">
+                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
                       </select>
                     </div>
                   </b-col>
                   </b-row>
                   <b-row>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Region del Jardin</label>
+                        <select class="form-control" @change="cambioRegion(false)" v-model="$v.region.$model">
+                          <option v-for="i in regiones" :key="i.region">{{i.region}}</option>
+                        </select>
+                      </div>
+                    </b-col>
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Comuna del Jardin</label>
                         <select class="form-control" v-model="$v.comuna.$model">
-                          <option disabled value="">Seleccione que tipo de equipo es</option>
-                          <option>Bueno</option>
-                          <option>Regular</option>
-                          <option>Malo</option>
-                          <option>Baja</option>
+                          <option v-for="i in comunas" :key="i.comuna">{{i.comuna}}</option>
                       </select>
                       </div>
                     </b-col>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Provincia del Jardin</label>
-                        <select class="form-control" v-model="$v.provincia.$model">
-                          <option disabled value="">Seleccione que tipo de equipo es</option>
-                          <option>Bueno</option>
-                          <option>Regular</option>
-                          <option>Malo</option>
-                          <option>Baja</option>
+                        <select class="form-control" @change="cambioProvincia(false)" v-model="$v.provincia.$model">
+                          <option v-for="i in provincias" :key="i.provincia">{{i.provincia}}</option>
                       </select>
                       </div>
                     </b-col>
@@ -164,8 +171,9 @@
             </div>
           </div>
           <!-- Historial del funcionario -->
-          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
-          <b-button @click="ActHistorial()" class="botonAgregar btn btn-success" v-if="pestaña === 'historial'">Filtrar Datos de la tabla</b-button>
+          <div class="row">
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
+          </div>  
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialdependencias" v-if="pestaña === 'historial'">
                   <thead>
@@ -181,15 +189,15 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td scope="row">January</td>
-                      <td>1324343324</td>
-                      <td>$10asd0</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
+                    <tr v-for="i in historial" :key="i.codHistorial">
+                      <td scope="row">{{i.codHistorial}}</td>
+                      <td>{{i.codEquipo}}</td>
+                      <td>{{i.tipoEquipo}}</td>
+                      <td>{{i.serie}}</td>
+                      <td>{{i.modelo}}</td>
+                      <td>{{i.nomMarca}}</td>
+                      <td>{{i.nombre}}</td>
+                      <td>{{i.zona}}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -213,17 +221,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td scope="row">January</td>
-                      <td>1324343324</td>
-                      <td>$10asd0</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
-                      <td>January</td>
+                    <tr v-for="i in equiposAct" :key="i.codHistorial">
+                      <td scope="row">{{i.codHistorial}}</td>
+                      <td>{{i.codEquipo}}</td>
+                      <td>{{i.tipoEquipo}}</td>
+                      <td>{{i.serie}}</td>
+                      <td>{{i.modelo}}</td>
+                      <td>{{i.nomMarca}}</td>
+                      <td>{{i.nombre}}</td>
+                      <td>{{i.zona}}</td>
                       <td>
-                        <b-button @click="quitar()" class="btn-danger btn-sm">Quitar</b-button>
+                        <b-button @click="quitar(i.codHistorial)" class="btn-danger btn-sm">Quitar</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -258,12 +266,16 @@ export default {
         pestaña: 'dependencias',
         codigo: '',
         nomJardinAgrega: '',
+        dueño: '',
+        dueños: [],
         regionAgrega: '',
         regiones: [],
         comunaAgrega: '',
         comunas: [],
         provinciaAgrega: '',
         provincias: [],
+        //Variables para edición
+        codigoEditar: '',
         nomJardin: '',
         region: '',
         comuna: '',
@@ -278,6 +290,7 @@ export default {
       //Validaciones de los input
       codigo:{required},
       nomJardinAgrega:{required},
+      dueño: {required},
       regionAgrega:{required},
       comunaAgrega:{required},
       provinciaAgrega:{required},
@@ -289,7 +302,8 @@ export default {
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarDependencias();
-      this.obtenerRegiones();
+      this.obtenerRegiones(true);
+      this.listarDueños();
     },
     methods: { //Vista inicial
     //Función que obtiene los datos de las dependencias y los enviar al arreglo que cargara la tabla
@@ -302,13 +316,33 @@ export default {
             this.alerta('danger', 'No se han podido cargar a las dependencias');
           })
       },
+      //Muestra el historial de equipos de una dependencia
+      listarHistorial(){
+        this.axios.get(`/Histdependencia/${this.codigoEditar}`)
+          .then(res => {
+            this.historial = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se ha logrado obtener el historial deseado');
+          })
+      },
+      //Lista los datos de los equipos de los que una dependencia es dueño
+      listarActuales(){
+        this.axios.get(`/Actdependencia/${this.codigoEditar}`)
+          .then(res => {
+            this.equiposAct = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se ha logrado obtener los equipos que ocupa el funcionario');
+          })
+      },
       //Función que obtiene todas las regiones
-      obtenerRegiones(){
+      obtenerRegiones(agregar){
         this.axios.get('/regiones')
           .then(res => {
             this.regiones = res.data;
             this.regionAgrega = res.data[0].region;
-            this.obtenerProvincias(true);
+            if(agregar)this.obtenerProvincias(true);
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar las regiones');
@@ -317,56 +351,95 @@ export default {
       //Funcion que permite indicar cuando se cambia una region
       cambioRegion(agregar){
         if(agregar)this.obtenerProvincias(true);
+        else this.obtenerProvincias(false);
+      },
+      //Funcion que permite indicar cuando se cambia una provincia
+      cambioProvincia(agregar){
+        if(agregar)this.obtenerComunas(true);
+        else this.obtenerComunas(false);
       },
       //Funcion que carga las provincias de una region, si agregar es true carga las provincias de la vista agregar
-      obtenerProvincias(agregar){
+      obtenerProvincias(agregar,provincia,comuna){
         if(agregar) var r = this.regionAgrega;
         else var r = this.region;
         this.axios.get(`/provincias/${r}`)
           .then(res => {
             this.provincias = res.data;        
-            if(agregar) this.provinciaAgrega = res.data[0].provincia;
-            else this.provincia = res.data[0].provincia;
+            if(agregar){
+              this.provinciaAgrega = res.data[0].provincia;
+              this.obtenerComunas(true)
+            }
+            else{
+              if(provincia){
+                this.provincia = provincia;
+                this.obtenerComunas(false,comuna)
+              }else{
+                this.provincia = res.data[0].provincia;
+                this.obtenerComunas(false)
+              }
+            }
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar las provincias');
           })
       },
-      /*Funcion que carga las comunas de una provincia, si agregar es true carga las comunas de la vista agregar
-      obtenerComunas(agregar){
-        if(agregar) var r = this.regionAgrega;
-        else var r = this.region;
-        this.axios.get(`/provincias/${r}`)
+      //Funcion que carga las comunas de una provincia, si agregar es true carga las comunas de la vista agregar
+      obtenerComunas(agregar,comuna){
+        if(agregar) var r = this.provinciaAgrega;
+        else var r = this.provincia;
+        this.axios.get(`/comunas/${r}`)
           .then(res => {
-            this.provincias = res.data;        
-            if(agregar) this.provinciaAgrega = res.data[0].provincia;
-            else this.provincia = res.data[0].provincia;
+            this.comunas = res.data;        
+            if(agregar) this.comunaAgrega = res.data[0].comuna;
+            else {
+              if(comuna){
+                this.comuna = comuna;
+              }else{
+                this.comuna = res.data[0].comuna;
+              }
+            }
           })
           .catch(e => {
-            this.alerta('danger', 'No se han podido cargar las provincias');
+            this.alerta('danger', 'No se han podido cargar las comunas');
           })
-      },*/
-
+      },
+      //Carga todos los funcionarios de la base de datos
+      listarDueños(){
+        this.axios.get('/funcionarios')
+          .then(res => {
+            this.dueños = res.data;
+            this.dueño = res.data[0].nombre
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar los nombres de los Funcionarios');
+        })
+      },
       //Función que determina la vista de edición de una dependencia
-      Acteditar(){
+      Acteditar(codigo){
         this.pestaña = 'editar'
+        this.codigoEditar = codigo;
         $('#dependencias').DataTable().destroy();
         $('#historialdependencias').DataTable().destroy();
         $("#actualesdependencias").DataTable().destroy();
+        this.cargarDependencia();
       },
       //Función que determina la vista del historial de una dependencia
-      ActHistorial(){
+      ActHistorial(codigo){
         $('#dependencias').DataTable().destroy();
         $("#actualesdependencias").DataTable().destroy();
         $('#historialdependencias').DataTable()
         this.pestaña = 'historial'
+        this.codigoEditar = codigo;
+        this.listarHistorial();
       },
       //Función que determina la vista de los equipos actuales de una dependencia
-      EquiposActuales(){
+      EquiposActuales(codigo){
         $('#dependencias').DataTable().destroy();
         $("#historialdependencias").DataTable().destroy();
         $('#actualesdependencias').DataTable()
         this.pestaña = 'actuales'
+        this.codigoEditar = codigo;
+        this.listarActuales();
       },
       //Función que determina la vista de agregar
       agregar(){
@@ -376,19 +449,115 @@ export default {
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarDependencia(){
-        console.log("Agregaaa")
+        this.$v.$touch()
+        if(!this.$v.codigo.$invalid && !this.$v.nomJardinAgrega.$invalid){
+          this.axios.post('/agregaDependencia', {codJardin: this.codigo, nomJardin: this.nomJardinAgrega, nombre: this.dueño, region: this.regionAgrega, comuna: this.comunaAgrega, provincia: this.provinciaAgrega})
+            .then(res => {
+              if(res.data.sqlMessage){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido crear la dependencia ' + this.nomJardinAgrega,
+                  footer: 'Ya existe una dependencia con algun dato repetido revise la lista de dependencias'
+                })
+              }else{
+              Swal.fire(
+                'Se ha creado una nueva dependencia, ' + this.nomJardinAgrega + ' se agrego al sistema!',
+                'Seleccione Ok para continuar',
+                'success'
+              )}
+              //location.reload();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha podido crear la dependencia ' + this.nomJardinAgrega,
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+        }
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         location.reload();
-      }, //Vista de editar
+      }, 
+      //Vista de editar
+      //Función que se encarga de cargar los datos de la Dependencia a editar
+      async cargarDependencia(){
+        await this.axios.get(`/dependencia/${this.codigoEditar}`)
+          .then(res => {
+            this.nomJardin = res.data[0].nomJardin;
+            this.dueño = res.data[0].nombre;
+            this.region = res.data[0].region;
+            this.obtenerProvincias(false,res.data[0].provincia,res.data[0].comuna);
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido ingresar a los datos de esta dependencia',
+              footer: 'Posible error del sistema'
+            })
+            this.pestaña = 'dependencia';
+          })
+      },
        //Función que permite editar a una dependencia
       editarDependencia(){
-        console.log('Editateee')
+        this.$v.$touch()
+        if(!this.$v.nomJardin.$invalid){
+          this.axios.put(`/actualizaDependencia/${this.codigoEditar}`, {codJardin: this.codigo, nomJardin: this.nomJardin, nombre: this.dueño, region: this.region, comuna: this.comuna, provincia: this.provincia})
+            .then(res => {
+              if(res.data.sqlMessage){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido actualizar la dependencia ' + this.nomJardin,
+                  footer: 'Ya existe una dependencia con estos datos revise la lista de dependencias'
+                })
+              }else{
+              Swal.fire(
+                'Se registraron los cambios de la Dependencia, ' + this.nomJardin + ' actualización Realizada!',
+                'Seleccione Ok para continuar',
+                'success'
+              )}
+              //location.reload();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha podido actualizar la Dependencia ' + this.nomJardin,
+                footer: 'Posible error del sistema'
+              })
+            })
+        }else{
+          this.alerta('danger', 'Ingrese un nombre valido');
+        }
       },
       //Funcion que quita un equipo a una dependencia
-      quitar(){
-        console.log("holaxd")
+      quitar(id){
+        this.axios.put(`/actualizaHistorial/${id}`)
+          .then(res => {
+            const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
+            console.log(index);
+            this.equiposAct.splice(index, 1)
+            Swal.fire(
+              'Se ha quitado un equipo a la Dependencia!',
+              'Seleccione Ok para continuar',
+              'success'
+            )
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'No se ha podido quitar el equipo a la Dependencia',
+              footer: 'Posible error del sistema'
+            })
+          })
       },
       //Funciones de la alerta
       countDownChanged(dismissCountDown) {

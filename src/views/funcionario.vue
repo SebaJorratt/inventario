@@ -413,7 +413,6 @@ export default {
       },
       //Función que permite editar a un funcionario
       editarFuncionario(){
-        console.log(this.codigoEditar);
         this.$v.$touch()
         if(!this.$v.codigoFuncionario.$invalid && !this.$v.nomFuncionario.$invalid && !this.$v.correo.$invalid && !this.$v.rut.$invalid){
           this.axios.put(`/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut})
