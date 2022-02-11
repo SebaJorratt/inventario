@@ -148,10 +148,14 @@
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
-                      <select class="form-control" v-model="$v.tipo.$model">
+                      <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label> 
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'si'" style="color: #35ACF1;" class="form-label">&nbsp; (Crear Nuevo Tipo?)</label>
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'no'" style="color: #35ACF1;" class="form-label">&nbsp; (Revisar ya existentes)</label>
+                      <select class="form-control" v-model="$v.tipo.$model" v-if="tipoMostrar === 'si'">
                         <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
+                      <input type="text" class="form-control" id="tiponewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.tipoNew.$model">
+                      <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
                       <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
                     </div>
                   </b-col>
@@ -167,9 +171,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
-                      <select class="form-control" v-model="$v.marca.$model">
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'si'" style="color: #35ACF1;" class="form-label">&nbsp; (Crear Nueva Marca?)</label>
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'no'" style="color: #35ACF1;" class="form-label">&nbsp; (Revisar ya existentes)</label>
+                      <select class="form-control" v-model="$v.marca.$model"  v-if="tipoMostrar === 'si'">
                         <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
+                      <input type="text" class="form-control" id="marcanewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.marcaNew.$model">
+                      <p class="text-danger" v-if="$v.marcaNew.$error">Es necesario ingresar el nombre de la marca</p>
                       <p class="text-danger" v-if="$v.marca.$error">Debe rellenar el campo marca</p>
                     </div>
                   </b-col>
@@ -195,13 +203,30 @@
                     </div>
                   </b-col>
                 </b-row>
-                <b-row>
+                <b-row v-if="tipoMostrar === 'si'">
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <b-button @click="EditarEquipo()" class="btn-success botonmostrar">Editar Equipo</b-button>
                     </div>
                   </b-col>  
                   <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <b-button @click="Volver()" class="botonmostrar">Volver</b-button>
+                    </div>
+                  </b-col>  
+                </b-row>
+                <b-row v-if="tipoMostrar === 'no'">
+                  <b-col cols="12" md="4">
+                    <div class="mb-3">
+                      <b-button @click="agregaTipo()" class="btn-success botonmostrar">Agregar Tipo</b-button>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="4">
+                    <div class="mb-3">
+                      <b-button @click="agregaMarca()" class="btn-success botonmostrar">Agregar Marca</b-button>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="4">
                     <div class="mb-3">
                       <b-button @click="Volver()" class="botonmostrar">Volver</b-button>
                     </div>
@@ -270,6 +295,8 @@ import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
 
+import { mapState } from 'vuex'
+
 export default {
   name: "about",
   components: {
@@ -284,6 +311,7 @@ export default {
         equiposMalEstado: [],
         //Pestaña que indica la vista actual
         pestaña: 'equiposact',
+        tipoMostrar: 'si',
         botones: 'si',
         selected: '',
         //Datos de editar
@@ -292,8 +320,10 @@ export default {
         modelo: '',
         tipo: '',
         tipos: [],
+        tipoNew: [],
         serie: '',
         marca: '',
+        marcaNew: '',
         marcas: [],
         estado: '',
         condicion: '',
@@ -315,14 +345,19 @@ export default {
       codigo:{required},
       modelo:{required},
       tipo:{required},
+      tipoNew:{required},
       serie:{required},
       marca:{required},
+      marcaNew:{required},
       estado:{required},
       condicion:{required},
       numero:{required},
       zona:{required},
       nombre:{required},
       dueño:{required},
+    },
+    computed: {
+      ...mapState(['token'])
     },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
@@ -357,7 +392,12 @@ export default {
       },
       //Función que obtiene todos los tipos
       obtenerTipos(){
-        this.axios.get('/tipos')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/tipos', config)
           .then(res => {
             this.tipos = res.data;
           })
@@ -367,7 +407,12 @@ export default {
       },
       //Función que obtiene todos las marcas
       obtenerMarcas(){
-        this.axios.get('/marcas')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/marcas', config)
           .then(res => {
             this.marcas = res.data;
           })
@@ -377,7 +422,12 @@ export default {
       },
       //Funcion que obtiene los datos del equipo a editar
       obtenerEqpEditar(id){
-        this.axios.get(`/datosEqp/${id}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/datosEqp/${id}`, config)
           .then(res => {
             this.corr = res.data[0].corrEquipo;
             this.codigo = res.data[0].codEquipo;
@@ -400,8 +450,13 @@ export default {
           })
       },
       //Funcion que quita un equipo a un funcionario
-      async quitar(id, estado){
-        await this.axios.put(`/actualizaHistorial/${id}`)
+      quitar(id, estado){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
           .then(res => {
             const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
             console.log(index);
@@ -432,7 +487,12 @@ export default {
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo con dueños
       listarEquiposAct(){
-        this.axios.get('/equiposConDueno')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/equiposConDueno', config)
           .then(res => {
             this.equiposAct = res.data;
             this.llenarCorrelativos();
@@ -457,7 +517,12 @@ export default {
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo sin dueños
       listarEquiposBuenEstado(){
-         this.axios.get('/equiposSinDueno')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+         this.axios.get('api/equiposSinDueno', config)
           .then(res => {
             this.equiposBuenEstado = res.data;
           })
@@ -475,7 +540,12 @@ export default {
       },
       //Ingresa los datos al arreglo que utilizara la tabla de Equipo dados de baja
       listarEquiposMalEstado(){
-        this.axios.get('/equiposBaja')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/equiposBaja', config)
           .then(res => {
             this.equiposMalEstado = res.data;
           })
@@ -483,11 +553,78 @@ export default {
             this.alerta('danger', 'No se han podido cargar los equipos dados de baja');
         })
       },
+      //Función que agrega un nuevo Tipo y retorna true o false
+      agregaTipo(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.$v.$touch()
+        if(!this.$v.tipoNew.$invalid){
+          this.axios.post('api/agregaTipo', {tipoEquipo: this.tipoNew}, config)
+            .then(res => {
+              Swal.fire(
+                'Se ha generado un nuevo tipo de equipo ',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+              this.tipoMostrar = 'si';
+              this.obtenerTipos();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha crear este nuevo tipo',
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
+        }
+      },
+      //Función que agrega una nueva marca y retorna true o false
+      agregaMarca(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.$v.$touch()
+        if(!this.$v.marcaNew.$invalid){
+          this.axios.post('api/agregaMarca', {nomMarca: this.marcaNew}, config)
+            .then(res => {
+              Swal.fire(
+                'Se ha generado una nueva marca ',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+              this.tipoMostrar = 'si';
+              this.obtenerMarcas();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha logrado crear esta nueva marca',
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
+        }
+      },
       //Función que permite editar un equipo algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       EditarEquipo(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
-          this.axios.put(`/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca})
+          this.axios.put(`api/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca}, config)
             .then(res => {
               Swal.fire(
                 'Se ha editado al equipo satisfactoriamente',
@@ -519,7 +656,12 @@ export default {
       },
       //Carga todos los jardines de la base de datos
       nombresJardin(){
-        this.axios.get('/dependencias')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/dependencias', config)
           .then(res => {
             this.nombres = res.data;
             this.nombre = res.data[0].nomJardin
@@ -530,7 +672,12 @@ export default {
       },
       //Carga todos los funcionarios de la base de datos
       listarDueños(){
-        this.axios.get('/funcionarios')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/funcionarios', config)
           .then(res => {
             this.dueños = res.data;
             this.dueño = res.data[0].nombre
@@ -541,7 +688,12 @@ export default {
       },
       //Función que envia un equipo con un nuevo dueño
       EnviarEquipo(){
-        this.axios.post('/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero})
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.post('api/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero}, config)
           .then(res => {
             Swal.fire(
               'Se ha enviado un equipo al funcionario ' + this.dueño +'!',
@@ -564,6 +716,14 @@ export default {
       },
       showAlert() {
         this.dismissCountDown = this.dismissSecs
+      },
+      //Funcion que cambiara entre un tipo existente y uno nuevo
+      CambioTipo(){
+        if(this.tipoMostrar === 'no'){
+          this.tipoMostrar = 'si'
+        }else{
+          this.tipoMostrar = 'no'
+        }
       }
     },
     //Prepara las tablas como Datatables de JQuery

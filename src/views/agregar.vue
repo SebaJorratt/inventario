@@ -86,6 +86,8 @@
 <script>
 import navbar from "../components/navbar.vue";
 import { required} from "vuelidate/lib/validators";
+
+import { mapState } from 'vuex'
 export default {
   name: "about",
   components: {
@@ -116,6 +118,9 @@ export default {
       estado:{required},
       condicion:{required}
     },
+    computed: {
+      ...mapState(['token'])
+    },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.obtenerTipos();
@@ -125,9 +130,14 @@ export default {
       //Función que permite crear un nuevo equipo usa v-model y axios para enviar los datos al api
       //algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       agregarEquipo(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
-          this.axios.post('/agregaEquipo', {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, tipoEquipo: this.tipo, nomMarca: this.marca, estado: this.estado, condicion: this.condicion})
+          this.axios.post('api/agregaEquipo', {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, tipoEquipo: this.tipo, nomMarca: this.marca, estado: this.estado, condicion: this.condicion}, config)
             .then(res => {
               Swal.fire(
                 'Se ha creado un nuevo equipo!',
@@ -145,12 +155,22 @@ export default {
               })
           })
         }else{
-          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos');
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Rellene todos los campos',
+            footer: 'Revise que existan todos los datos requeridos'
+          })
         }
       },
       //Función que obtiene todos los tipos
       obtenerTipos(){
-        this.axios.get('/tipos')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/tipos', config)
           .then(res => {
             this.tipos = res.data;
             this.tipo = res.data[0].tipoEquipo;
@@ -161,7 +181,12 @@ export default {
       },
       //Función que obtiene todos las marcas
       obtenerMarcas(){
-        this.axios.get('/marcas')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/marcas', config)
           .then(res => {
             this.marcas = res.data;
             this.marca = res.data[0].nomMarca;

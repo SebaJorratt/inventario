@@ -229,6 +229,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
+
+import { mapState } from 'vuex'
 export default {
   name: "about",
   components: {
@@ -272,6 +274,9 @@ export default {
       correo:{required, email},
       rut:{required}
     },
+    computed: {
+      ...mapState(['token'])
+    },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarFuncionarios();
@@ -279,7 +284,12 @@ export default {
     methods: { //Vista inicial
     //Función que obtiene los datos de los funcionarios y los enviar al arreglo que cargara la tabla
       listarFuncionarios(){
-        this.axios.get('/funcionarios')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/funcionarios', config)
           .then(res => {
             this.funcionarios = res.data;
           })
@@ -289,7 +299,12 @@ export default {
       },
       //Muestra el historial de equipos del funcionario
       listarHistorial(){
-        this.axios.get(`/Histfuncionario/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/Histfuncionario/${this.codigoEditar}`, config)
           .then(res => {
             this.historial = res.data;
           })
@@ -299,7 +314,12 @@ export default {
       },
       //Lista los datos de los equipos de los que un funcionario es dueño
       listarActuales(){
-        this.axios.get(`/Actfuncionario/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/Actfuncionario/${this.codigoEditar}`, config)
           .then(res => {
             this.equiposAct = res.data;
           })
@@ -340,9 +360,14 @@ export default {
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarFuncionario(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.codigoFuncionarioAgregar.$invalid && !this.$v.nomFuncionarioAgregar.$invalid && !this.$v.correoAgregar.$invalid && !this.$v.rutAgregar.$invalid){
-          this.axios.post('/agregaFuncionario', {codigo: this.codigo, nombre: this.nomFuncionarioAgregar, codFuncionario: this.codigoFuncionarioAgregar, correo: this.correoAgregar, rut: this.rutAgregar})
+          this.axios.post('api/agregaFuncionario', {codigo: this.codigo, nombre: this.nomFuncionarioAgregar, codFuncionario: this.codigoFuncionarioAgregar, correo: this.correoAgregar, rut: this.rutAgregar}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -382,7 +407,12 @@ export default {
       }, 
       //Carga los datos de un funcionario que se va a editar
       cargarFuncionario(){
-        this.axios.get(`/funcionario/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/funcionario/${this.codigoEditar}`, config)
           .then(res => {
             this.codigoFuncionario = res.data[0].codFuncionario;
             this.nomFuncionario = res.data[0].nombre;
@@ -401,9 +431,14 @@ export default {
       },
       //Función que permite editar a un funcionario
       editarFuncionario(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.codigoFuncionario.$invalid && !this.$v.nomFuncionario.$invalid && !this.$v.correo.$invalid && !this.$v.rut.$invalid){
-          this.axios.put(`/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut})
+          this.axios.put(`api/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -436,7 +471,12 @@ export default {
       },
       //Funcion que quita un equipo a un funcionario
       quitar(id, estado){
-        this.axios.put(`/actualizaHistorial/${id}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
           .then(res => {
             const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
             console.log(index);

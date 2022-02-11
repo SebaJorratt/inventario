@@ -13,12 +13,12 @@
               
               <!-- Login Form -->
               <form @submit.prevent="submit">
-                <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.email.$model" :class="{'is-invalid': $v.email.$error}">
-                <p class="text-danger" v-if="$v.email.$error">Por favor ingrese un email</p>
+                <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.correo.$model" :class="{'is-invalid': $v.correo.$error}">
+                <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un correo</p>
                 <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
                 <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
                 <br>
-                <router-link to="/menu"><input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px" :disabled="$v.$invalid"></router-link> 
+                <input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px">
               </form>
               <!-- Remind Passowrd -->
               <div id="formFooter">
@@ -30,30 +30,53 @@
 
 <script>
 import { required, email, minLength } from "vuelidate/lib/validators";
+import { mapActions } from 'vuex';
 export default {
   name: 'inicio',
   data(){
     return{
       //Datos del Login
-      email: '',
+      correo: '',
       password: ''
     }
   },
   validations:{
     //Se validan el email y la contraseña con un minimo de letras
-    email:{required,email},
+    correo:{required,email},
     password:{required, minLength: minLength(6)}
   },
   methods: {
+    ...mapActions(['guardarUsuario', 'leerToken']),
     submit(){
       //Se revisa que se cumpla con los requerimientos y luego se busca al usuario en la base de datos
       this.$v.$touch()
-      if(this.$v.$invalid){
-        console.log('se genero un error')
+      if(!this.$v.$invalid){
+        this.axios.post('/auth/login', {correo: this.correo, password: this.password})
+          .then(res => {
+            console.log(res.data)
+            const token = res.data.token;
+            this.guardarUsuario(token);
+          })
+          .catch(e => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: e.response.data.mensaje,
+              footer: 'Error al intentar Ingresar a su seción'
+            })
+          })
       }else{
-        console.log('todos los campos correctos')
+        Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Debe rellenar correctamente todos los campos',
+              footer: 'Asegurese de que el email y la contraseña sean validas'
+            })
       }
     }
+  },
+  created(){
+    this.leerToken();
   }
 }
 </script>

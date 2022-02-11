@@ -22,7 +22,7 @@
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                     <li><router-link to="/configuracion"><a class="dropdown-item" href="#">Ver perfil</a></router-link> </li>
                                     <li><router-link to="/agregaUsuario"><a class="dropdown-item" href="#">Agregar Nuevo Usuario</a></router-link> </li>
-                                    <li><router-link to="/"><a class="dropdown-item" href="#">Cerrar sesión</a></router-link></li>
+                                    <li><a @click="cerrarSesion()" class="dropdown-item" href="#">Cerrar sesión</a></li>
                                 </ul>
                                 </div>
                             </b-nav-form>
@@ -34,6 +34,14 @@
     </div>
 </template>
 
+<script>
+import { mapActions } from 'vuex'
+export default {
+    methods:{
+        ...mapActions(['cerrarSesion'])
+    }
+}
+</script>
 <style>
     #dropdownMenuButton1{
         color: #F8F8FF;

@@ -203,8 +203,9 @@
                 </table>
             </div>
           <!-- Equipos Actuales del funcionario -->  
-          <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
-          <b-button @click="EquiposActuales()" class="botonAgregar btn btn-success" v-if="pestaña === 'actuales'">Filtrar Datos de la tabla</b-button>
+          <div class="row">
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
+          </div>
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="actualesdependencias" v-if="pestaña === 'actuales'">
                   <thead>
@@ -250,6 +251,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
+
+import { mapState } from 'vuex'
 
 export default {
   name: "about",
@@ -299,6 +302,9 @@ export default {
       comuna:{required},
       provincia:{required}
     },
+    computed: {
+      ...mapState(['token'])
+    },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarDependencias();
@@ -308,7 +314,12 @@ export default {
     methods: { //Vista inicial
     //Función que obtiene los datos de las dependencias y los enviar al arreglo que cargara la tabla
       listarDependencias(){
-        this.axios.get('/dependenciasTabla')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/dependenciasTabla', config)
           .then(res => {
             this.dependencias = res.data;
           })
@@ -318,7 +329,12 @@ export default {
       },
       //Muestra el historial de equipos de una dependencia
       listarHistorial(){
-        this.axios.get(`/Histdependencia/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/Histdependencia/${this.codigoEditar}`, config)
           .then(res => {
             this.historial = res.data;
           })
@@ -328,7 +344,12 @@ export default {
       },
       //Lista los datos de los equipos de los que una dependencia es dueño
       listarActuales(){
-        this.axios.get(`/Actdependencia/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/Actdependencia/${this.codigoEditar}`, config)
           .then(res => {
             this.equiposAct = res.data;
           })
@@ -338,7 +359,12 @@ export default {
       },
       //Función que obtiene todas las regiones
       obtenerRegiones(agregar){
-        this.axios.get('/regiones')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/regiones', config)
           .then(res => {
             this.regiones = res.data;
             this.regionAgrega = res.data[0].region;
@@ -362,7 +388,12 @@ export default {
       obtenerProvincias(agregar,provincia,comuna){
         if(agregar) var r = this.regionAgrega;
         else var r = this.region;
-        this.axios.get(`/provincias/${r}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/provincias/${r}`, config)
           .then(res => {
             this.provincias = res.data;        
             if(agregar){
@@ -387,7 +418,12 @@ export default {
       obtenerComunas(agregar,comuna){
         if(agregar) var r = this.provinciaAgrega;
         else var r = this.provincia;
-        this.axios.get(`/comunas/${r}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/comunas/${r}`, config)
           .then(res => {
             this.comunas = res.data;        
             if(agregar) this.comunaAgrega = res.data[0].comuna;
@@ -405,7 +441,12 @@ export default {
       },
       //Carga todos los funcionarios de la base de datos
       listarDueños(){
-        this.axios.get('/funcionarios')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/funcionarios', config)
           .then(res => {
             this.dueños = res.data;
             this.dueño = res.data[0].nombre
@@ -435,7 +476,6 @@ export default {
       //Función que determina la vista de los equipos actuales de una dependencia
       EquiposActuales(codigo){
         $('#dependencias').DataTable().destroy();
-        $("#historialdependencias").DataTable().destroy();
         $('#actualesdependencias').DataTable()
         this.pestaña = 'actuales'
         this.codigoEditar = codigo;
@@ -444,14 +484,17 @@ export default {
       //Función que determina la vista de agregar
       agregar(){
         $('#dependencias').DataTable().destroy();
-        $('#historialdependencias').DataTable().destroy();
-        $("#actualesdependencias").DataTable().destroy();
         this.pestaña = 'agregar'
       }, //Funciones de la vista agregar
       agregarDependencia(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.nomJardinAgrega.$invalid){
-          this.axios.post('/agregaDependencia', {codJardin: this.codigo, nomJardin: this.nomJardinAgrega, nombre: this.dueño, region: this.regionAgrega, comuna: this.comunaAgrega, provincia: this.provinciaAgrega})
+          this.axios.post('api/agregaDependencia', {codJardin: this.codigo, nomJardin: this.nomJardinAgrega, nombre: this.dueño, region: this.regionAgrega, comuna: this.comunaAgrega, provincia: this.provinciaAgrega}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -482,8 +525,8 @@ export default {
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
-        $("#historialfuncionarios").DataTable().destroy();
-        $("#actualesfuncionarios").DataTable().destroy();
+        $("#historialdependencias").DataTable().destroy();
+        $("#actualesdependencias").DataTable().destroy();
         this.pestaña = 'dependencias'
         this.listarDependencias();
         this.obtenerRegiones(true);
@@ -491,7 +534,12 @@ export default {
       //Vista de editar
       //Función que se encarga de cargar los datos de la Dependencia a editar
       async cargarDependencia(){
-        await this.axios.get(`/dependencia/${this.codigoEditar}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        await this.axios.get(`api/dependencia/${this.codigoEditar}`, config)
           .then(res => {
             this.nomJardin = res.data[0].nomJardin;
             this.dueño = res.data[0].nombre;
@@ -510,9 +558,14 @@ export default {
       },
        //Función que permite editar a una dependencia
       editarDependencia(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
         this.$v.$touch()
         if(!this.$v.nomJardin.$invalid){
-          this.axios.put(`/actualizaDependencia/${this.codigoEditar}`, {codJardin: this.codigo, nomJardin: this.nomJardin, nombre: this.dueño, region: this.region, comuna: this.comuna, provincia: this.provincia})
+          this.axios.put(`api/actualizaDependencia/${this.codigoEditar}`, {codJardin: this.codigo, nomJardin: this.nomJardin, nombre: this.dueño, region: this.region, comuna: this.comuna, provincia: this.provincia}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -543,7 +596,12 @@ export default {
       },
       //Funcion que quita un equipo a una dependencia
       quitar(id){
-        this.axios.put(`/actualizaHistorial/${id}`)
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
           .then(res => {
             const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
             console.log(index);
@@ -579,8 +637,6 @@ export default {
     mounted(){
       //Se cargan las tablas como Datatables del Jquery
       $('#dependencias').DataTable();
-      $('#historialdependencias').DataTable();
-      $("#actualesdependencias").DataTable()
     },
     watch: {
       dependencias(val) {
