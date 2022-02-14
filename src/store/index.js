@@ -42,6 +42,11 @@ export default new Vuex.Store({
       }else{
         commit('obtenerUsuario', '')
       }
+    },
+    admin(){
+      if(this.state.usuarioDB.data[0].tipoUsuario == 0){
+        router.push({name: 'menu'});
+      }
     }
   },
   modules: {

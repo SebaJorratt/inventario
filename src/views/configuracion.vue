@@ -1,9 +1,17 @@
 <template>
   <div class="configuracion">
     <navbar />
-    <p>{{$v.nombre}}</p>
       <div class="config">
         <h1>Mi Perfil</h1>
+        <b-alert
+            :show="dismissCountDown"
+            dismissible
+            :variant="mensaje.color"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+          >
+            {{mensaje.texto}}
+          </b-alert>  
         <div class="mt-5">
           <div id="centro"> 
             <b-container>
@@ -66,6 +74,9 @@
 <script>
 import navbar from "../components/navbar.vue";
 import { required, email, minLength } from "vuelidate/lib/validators";
+
+import { mapState } from 'vuex'
+
 export default {
   name: "about",
   components: {
@@ -78,19 +89,31 @@ export default {
         nombre: '',
         email: '',
         password: '',
-        newPassword: ''
+        newPassword: '',
+        //Variables de las alertas
+        dismissSecs: 5,
+        dismissCountDown: 0,
+        mensaje: {color: '', texto: ''}
       }
     },
     validations:{
       nombre:{required, minLength: minLength(10)},
       email:{required,email},
-      password:{minLength: minLength(6)},
-      newPassword:{minLength: minLength(6)}
+      password:{minLength: minLength(6), required},
+      newPassword:{minLength: minLength(6), required}
     },
     created(){
-
+      this.cargarUsuario();
+    },
+    computed: {
+      ...mapState(['token'])
     },
     methods: {
+      alerta(color, texto){
+        this.mensaje.color = color;
+        this.mensaje.texto = texto;
+        this.showAlert();
+      },
       mostrarContra(){
         if(this.contrasena === 'no'){
           this.contrasena = 'si'
@@ -100,8 +123,78 @@ export default {
           this.contra = 'Cambiar su contraseña'
         }
       },
+      //Función que edita a un usuario
       editarUsuario(){
-        console.log('enviar usuario editado')
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.$v.$touch()
+        if(!this.$v.nombre.$invalid && !this.$v.email.$invalid){
+          if(this.contrasena === 'no'){
+            this.axios.put(`auth/actualizaUser`, {nomUsuario: this.nombre, correo: this.email}, config)
+              .then(res => {
+                      Swal.fire(
+                      'Se ha editado al usuario satisfactoriamente',
+                      'Seleccione Ok para continuar',
+                      'success'
+                      )
+              })
+              .catch(e => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: e.response.data.mensaje,
+                  footer: 'Error al intentar Ingresar a su seción'
+                })
+              })
+          }else{
+            if(!this.$v.password.$invalid && !this.$v.newPassword.$invalid){
+              this.axios.put(`auth/actualizaUser`, {nomUsuario: this.nombre, correo: this.email, password: this.password, newPassword: this.newPassword}, config)
+                .then(res => {
+                      Swal.fire(
+                      'Se ha editado al usuario satisfactoriamente',
+                      'Seleccione Ok para continuar',
+                      'success'
+                      )
+                })
+                .catch(e => {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: e.response.data.mensaje,
+                    footer: 'Error al intentar Ingresar a su seción'
+                  })
+                })
+            }else{
+              this.alerta('danger', 'Porfavor ingrese su contraseña anterior y la nueva (Minmos 6 caracteres)');
+            }
+          }
+        }else{
+          this.alerta('danger', 'Porfavor ingrese todos los datos requeridos y un email valido');
+        }
+      },
+      cargarUsuario(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('auth/obtenerDatos', config)
+          .then(res => {
+            this.nombre = res.data[0].nomUsuario;
+            this.email = res.data[0].correo;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar los datos del usuario');
+          })
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs
       }
     }
 };

@@ -320,7 +320,7 @@ export default {
         modelo: '',
         tipo: '',
         tipos: [],
-        tipoNew: [],
+        tipoNew: '',
         serie: '',
         marca: '',
         marcaNew: '',
@@ -459,7 +459,6 @@ export default {
         this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
           .then(res => {
             const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
-            console.log(index);
             this.equiposAct.splice(index, 1)
             this.corrEquipos.splice(index, 1)
             Swal.fire(
@@ -584,7 +583,7 @@ export default {
           this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
         }
       },
-      //Función que agrega una nueva marca y retorna true o false
+      //Función que agrega una nueva marca
       agregaMarca(){
         let config = {
           headers: {
@@ -612,7 +611,7 @@ export default {
               })
           })
         }else{
-          this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
+          this.alerta('danger', 'Porfavor ingrese un nombre para la marca');
         }
       },
       //Función que permite editar un equipo algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones

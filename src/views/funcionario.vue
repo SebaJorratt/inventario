@@ -9,14 +9,14 @@
             <h1 v-if="pestaña === 'actuales'">Equipos actuales del Funcionario</h1>
             <h1 v-if="pestaña === 'editar'">Editar Funcionario</h1>
             <b-alert
-            :show="dismissCountDown"
-            dismissible
-            :variant="mensaje.color"
-            @dismissed="dismissCountDown=0"
-            @dismiss-count-down="countDownChanged"
-          >
-            {{mensaje.texto}}
-          </b-alert>  
+              :show="dismissCountDown"
+              dismissible
+              :variant="mensaje.color"
+              @dismissed="dismissCountDown=0"
+              @dismiss-count-down="countDownChanged"
+              >
+              {{mensaje.texto}}
+            </b-alert>  
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">

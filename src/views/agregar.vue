@@ -3,7 +3,15 @@
     <navbar />
     <br />
     <h1 id="menu">Agregar equipos</h1>
-
+    <b-alert
+      :show="dismissCountDown"
+      dismissible
+      :variant="mensaje.color"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+    >
+    {{mensaje.texto}}
+    </b-alert>
     <div class="mt-5">
       <div id="centro"> 
         <b-container>
@@ -27,9 +35,13 @@
                   <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label>
-                      <select class="form-control" v-model="$v.tipo.$model">
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'si'" style="color: #35ACF1;" class="form-label">&nbsp; (Crear Nuevo Tipo?)</label>
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'no'" style="color: #35ACF1;" class="form-label">&nbsp; (Revisar ya existentes)</label>
+                      <select class="form-control" v-model="$v.tipo.$model" v-if="tipoMostrar === 'si'">
                         <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
+                      <input type="text" class="form-control" id="tiponewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.tipoNew.$model">
+                      <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
                       <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
                     </div>
                   </b-col>
@@ -45,9 +57,13 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Marca equipo</label>
-                      <select class="form-control" v-model="$v.marca.$model">
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'si'" style="color: #35ACF1;" class="form-label">&nbsp; (Crear Nueva Marca?)</label>
+                      <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'no'" style="color: #35ACF1;" class="form-label">&nbsp; (Revisar ya existentes)</label>
+                      <select class="form-control" v-model="$v.marca.$model" v-if="tipoMostrar === 'si'">
                         <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
+                      <input type="text" class="form-control" id="marcanewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.marcaNew.$model">
+                      <p class="text-danger" v-if="$v.marcaNew.$error">Es necesario ingresar el nombre de la marca</p>
                       <p class="text-danger" v-if="$v.marca.$error">Es necesario ingresar una marca</p>
                     </div>
                   </b-col>
@@ -74,7 +90,9 @@
                   </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="agregarEquipo()" class="btn btn-primary">Agregar equipo</button>
+              <button type="submit" @click="agregarEquipo()" class="btn btn-primary" v-if="tipoMostrar === 'si'">Agregar equipo</button>
+              <b-button @click="agregaTipo()" class="btn-success botonmostrar" v-if="tipoMostrar === 'no'">Agregar Tipo</b-button> &nbsp;
+              <b-button @click="agregaMarca()" class="btn-success botonmostrar" v-if="tipoMostrar === 'no'">Agregar Marca</b-button>
             </div>
           </div>
         </b-container>
@@ -95,17 +113,24 @@ export default {
   },
   data() {
       return {
+        tipoMostrar: 'si',
         //Datos para agregar un nuevo equipo con v-model
         selected: '',
         codigo: '',
         modelo: '',
         tipo: '',
+        tipoNew: '',
         tipos: [],
         serie: '',
         marca: '',
+        marcaNew: '',
         marcas: [],
         estado: '',
-        condicion: ''
+        condicion: '',
+        //Variables de las alertas
+        dismissSecs: 5,
+        dismissCountDown: 0,
+        mensaje: {color: '', texto: ''}
       }
     },
     validations:{
@@ -113,8 +138,10 @@ export default {
       codigo:{required},
       modelo:{required},
       tipo:{required},
+      tipoNew:{required},
       serie:{required},
       marca:{required},
+      marcaNew:{required},
       estado:{required},
       condicion:{required}
     },
@@ -127,6 +154,11 @@ export default {
       this.obtenerMarcas();
     },
     methods: {
+      alerta(color, texto){
+        this.mensaje.color = color;
+        this.mensaje.texto = texto;
+        this.showAlert();
+      },
       //Función que permite crear un nuevo equipo usa v-model y axios para enviar los datos al api
       //algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       agregarEquipo(){
@@ -163,6 +195,65 @@ export default {
           })
         }
       },
+      agregaTipo(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        if(!this.$v.tipoNew.$invalid){
+          this.axios.post('api/agregaTipo', {tipoEquipo: this.tipoNew}, config)
+            .then(res => {
+              Swal.fire(
+                'Se ha generado un nuevo tipo de equipo ',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+              this.tipoMostrar = 'si';
+              this.obtenerTipos();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha crear este nuevo tipo',
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
+        }
+      },
+      //Función que agrega una nueva marca
+      agregaMarca(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        if(!this.$v.marcaNew.$invalid){
+          this.axios.post('api/agregaMarca', {nomMarca: this.marcaNew}, config)
+            .then(res => {
+              Swal.fire(
+                'Se ha generado una nueva marca ',
+                'Seleccione Ok para continuar',
+                'success'
+              )
+              this.tipoMostrar = 'si';
+              this.obtenerMarcas();
+            })
+            .catch(e => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se ha logrado crear esta nueva marca',
+                footer: 'Posible error del sistema'
+              })
+          })
+        }else{
+          this.alerta('danger', 'Porfavor ingrese un nombre para la marca');
+        }
+      },
       //Función que obtiene todos los tipos
       obtenerTipos(){
         let config = {
@@ -195,6 +286,19 @@ export default {
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar las marcas');
         })
+      },
+      CambioTipo(){
+        if(this.tipoMostrar === 'no'){
+          this.tipoMostrar = 'si'
+        }else{
+          this.tipoMostrar = 'no'
+        }
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs
       }
     }
 };
