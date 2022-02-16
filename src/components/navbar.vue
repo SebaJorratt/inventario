@@ -4,11 +4,11 @@
             <b-navbar toggleable="md" type="dark" variant="danger">
                 <b-container>
                     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-                    <img src="../assets/logoborde.png" alt="" width="50px" class="iconJunji">  
-                    <router-link to="/menu"><b-navbar-brand > Inventario |</b-navbar-brand></router-link> 
+                    
+                    <router-link to="/menu"> <img src="../assets/logoborde.png" alt="" width="50px" class="iconJunji">  <b-navbar-brand > Inventario |</b-navbar-brand></router-link> 
                      <b-collapse id="nav-collapse" is-nav>
                          <b-navbar-nav>
-                            <b-nav-item :to="{name:'equipos'}">Lista de equipos</b-nav-item>
+                            <b-nav-item :to="{name:'equipos'}" >Lista de equipos</b-nav-item>
                             <b-nav-item :to="{name:'agregar'}">Agregar Equipo</b-nav-item>
                             <b-nav-item :to="{name:'funcionario'}">Funcionarios</b-nav-item>
                             <b-nav-item :to="{name:'dependencia'}">Dependencia</b-nav-item>
@@ -16,12 +16,12 @@
                         <b-navbar-nav class="ml-auto">
                             <b-nav-form>
                                 <div class="dropdown">
-                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn dropdown-toggle" type="button" style="border-color: black;" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{nombre}}
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                     <li><router-link to="/configuracion"><a class="dropdown-item" href="#">Ver perfil</a></router-link> </li>
-                                    <li v-if="activo"><router-link to="/agregaUsuario"><a class="dropdown-item" href="#" >Agregar Nuevo Usuario</a></router-link> </li>
+                                    <li v-if="activo"><router-link to="/agregaUsuario"><a class="dropdown-item" href="#" >Gestión de Usuarios</a></router-link> </li>
                                     <li><a @click="cerrarSesion()" class="dropdown-item" href="#">Cerrar sesión</a></li>
                                 </ul>
                                 </div>

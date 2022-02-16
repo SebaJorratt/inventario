@@ -4,8 +4,11 @@
     <b-container>
         <div class="menu">
           <h1 v-if="pestaña == 'editar'">Editar Equipo</h1>
-          <h1 v-else-if="pestaña == 'enviar'">Enviar Equipo</h1>
-          <h1 v-else>Listado de Equipos</h1>
+          <h1 v-else-if="pestaña == 'enviar'">Asignar Equipo</h1>
+          <h1 v-else-if="pestaña == 'equiposact'">Listado de Equipos con Usuario</h1>
+          <h1 v-else-if="pestaña == 'equiposNoAct'">Listado de Equipos sin Usuario</h1>
+          <h1 v-else-if="pestaña == 'equiposBaja'">Listado de Equipos Dados de Baja</h1>
+          <h1 v-else-if="pestaña == 'historial'">Historial del Equipo</h1>
           <b-alert
             :show="dismissCountDown"
             dismissible
@@ -19,17 +22,17 @@
             <b-row v-if="botones === 'si'">
               <b-col cols="12" md="4">
                 <div class="mb-1">
-                  <b-button @click="MostrarEquiposAct()" class="btn-success botonmostrar">Equipos con dueño</b-button>
+                  <b-button @click="MostrarEquiposAct()" class="btn-success boton">Equipos con Usuario</b-button>
                 </div>
               </b-col>
               <b-col cols="12" md="4">
                 <div class="mb-1">
-                  <b-button @click="EquiposBuenEstado()" class="btn-succes btn-warning botonmostrar">Equipos sin dueño</b-button>
+                  <b-button @click="EquiposBuenEstado()" class="btn-succes btn-warning boton">Equipos sin Usuario</b-button>
                 </div>
               </b-col>
               <b-col cols="12" md="4">
                 <div class="mb-1">
-                  <b-button @click="EquiposMalEstado()" class="btn-danger botonmostrar">Equipos dados de Baja</b-button>
+                  <b-button @click="EquiposMalEstado()" class="btn-danger boton">Equipos dados de Baja</b-button>
                 </div>
               </b-col>
             </b-row>
@@ -44,10 +47,11 @@
                   <th scope="col">Estado</th>
                   <th scope="col">Jardin</th>
                   <th scope="col">Codigo Jardin</th>
-                  <th scope="col">Dueño</th>
+                  <th scope="col">Usuario</th>
                   <th scope="col">Zona</th>
                   <th scope="col">Mostrar Equipo</th>
-                  <th scope="col">Quitar Equipo</th>
+                  <th scope="col">Historial</th>
+                  <th scope="col" v-if="activo">Quitar Equipo</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,10 +66,13 @@
                   <td>{{i.nombre}}</td>
                   <td>{{i.zona}}</td>
                   <td>
-                    <b-button @click="Acteditar(i.codHistorial, true)" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="Acteditar(i.codHistorial, true)" class="btn-warning btn-sm" style="border-color: white;">Mostrar Mas</b-button>
                   </td>
                   <td>
-                    <b-button @click="quitar(i.codHistorial, i.estado)" class="btn-danger btn-sm">Quitar</b-button>
+                    <b-button @click="ActHistorial(i.codHistorial, true)" class="btn-sm" style="border-color: white;">Historial</b-button>
+                  </td>
+                  <td v-if="activo">
+                    <b-button @click="quitar(i.codHistorial, i.estado)" class="btn-danger btn-sm" style="border-color: white;">Quitar</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -81,6 +88,7 @@
                   <th scope="col">Marca</th>
                   <th scope="col">Modelo</th>
                   <th scope="col">Enviar Equipo</th>
+                  <th scope="col">Historial</th>
                   <th scope="col">Mostrar Equipo</th>
                 </tr>
               </thead>
@@ -93,10 +101,13 @@
                   <td>{{i.nomMarca}}</td>
                   <td>{{i.modelo}}</td>
                   <td>
-                    <b-button @click="Enviar(i.corrEquipo)" class="btn-success btn-sm">Enviar Equipo</b-button>
+                    <b-button @click="Enviar(i.corrEquipo)" class="btn-success btn-sm" style="border-color: white;">Asignar Equipo</b-button>
                   </td>
                   <td>
-                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="ActHistorial(i.corrEquipo, false)" class="btn-sm" style="border-color: white;">Historial</b-button>
+                  </td>
+                  <td>
+                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm" style="border-color: white;">Mostrar Mas</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -112,6 +123,7 @@
                   <th scope="col">Marca</th>
                   <th scope="col">Modelo</th>
                   <th scope="col">Mostrar Equipo</th>
+                  <th scope="col">Historial</th>
                 </tr>
               </thead>
               <tbody>
@@ -123,13 +135,16 @@
                   <td>{{i.nomMarca}}</td>
                   <td>{{i.modelo}}</td>
                   <td>
-                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm">Mostrar Mas</b-button>
+                    <b-button @click="Acteditar(i.corrEquipo, false)" class="btn-warning btn-sm" style="border-color: white;">Mostrar Mas</b-button>
+                  </td>
+                  <td>
+                    <b-button @click="ActHistorial(i.corrEquipo, false)" class="btn-sm" style="border-color: white;">Historial</b-button>
                   </td>
                 </tr>
               </tbody>
             </table>
             <!-- Editar un Equipo -->
-              <div class="card" v-if="pestaña === 'editar'">
+              <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                 <div class="card-body">
                  <b-row>
                   <b-col cols="12" md="4">
@@ -155,8 +170,9 @@
                         <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
                       <input type="text" class="form-control" id="tiponewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.tipoNew.$model">
-                      <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
-                      <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
+                      <div v-if="tipoMostrar === 'no'">
+                        <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
+                      </div>
                     </div>
                   </b-col>
                 </b-row>
@@ -177,8 +193,9 @@
                         <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
                       <input type="text" class="form-control" id="marcanewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.marcaNew.$model">
-                      <p class="text-danger" v-if="$v.marcaNew.$error">Es necesario ingresar el nombre de la marca</p>
-                      <p class="text-danger" v-if="$v.marca.$error">Debe rellenar el campo marca</p>
+                      <div v-if="tipoMostrar === 'no'">
+                        <p class="text-danger" v-if="$v.marcaNew.$error" >Es necesario ingresar el nombre de la marca</p>
+                      </div>
                     </div>
                   </b-col>
                 </b-row>
@@ -206,36 +223,36 @@
                 <b-row v-if="tipoMostrar === 'si'">
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <b-button @click="EditarEquipo()" class="btn-success botonmostrar">Editar Equipo</b-button>
+                      <b-button @click="EditarEquipo()" class="btn-success botonmostrar boton">Editar Equipo</b-button>
                     </div>
                   </b-col>  
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <b-button @click="Volver()" class="botonmostrar">Volver</b-button>
+                      <b-button @click="Volver()" class="botonmostrar boton">Volver</b-button>
                     </div>
                   </b-col>  
                 </b-row>
                 <b-row v-if="tipoMostrar === 'no'">
                   <b-col cols="12" md="4">
                     <div class="mb-3">
-                      <b-button @click="agregaTipo()" class="btn-success botonmostrar">Agregar Tipo</b-button>
+                      <b-button @click="agregaTipo()" class="btn-success botonmostrar boton">Agregar Tipo</b-button>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
-                      <b-button @click="agregaMarca()" class="btn-success botonmostrar">Agregar Marca</b-button>
+                      <b-button @click="agregaMarca()" class="btn-success botonmostrar boton">Agregar Marca</b-button>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
                     <div class="mb-3">
-                      <b-button @click="Volver()" class="botonmostrar">Volver</b-button>
+                      <b-button @click="Volver()" class="botonmostrar boton">Volver</b-button>
                     </div>
                   </b-col>  
                 </b-row>
               </div>
             </div>
             <!-- Enviar un Equipo -->
-            <div class="card" v-if="pestaña === 'enviar'">
+            <div class="card" v-if="pestaña === 'enviar'" style="border-color: black;">
                 <div class="card-body">
                  <b-row>
                   <b-col cols="12" md="2">
@@ -270,16 +287,40 @@
                 <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <b-button @click="Volver()" href="#" class="botonmostrar">Volver al listado</b-button>
+                      <b-button @click="Volver()" href="#" class="botonmostrar boton">Volver al listado</b-button>
                     </div>
                   </b-col>  
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <b-button @click="EnviarEquipo()" class="btn-success botonmostrar">Enviar Equipo</b-button>
+                      <b-button @click="EnviarEquipo()" class="btn-success botonmostrar boton">Enviar Equipo</b-button>
                     </div>
                   </b-col>  
                 </b-row>
               </div>
+            </div>
+            <!-- Historial de un Equipo -->
+            <div class="row">
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Equipos</b-button>
+          </div>  
+          <div class="row">
+                <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialEquipo" v-if="pestaña === 'historial'">
+                  <thead>
+                    <tr>
+                      <th scope="col">Id</th>
+                      <th scope="col">Zona</th>
+                      <th scope="col">Jardin</th>
+                      <th scope="col">Usuario</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="i in historial" :key="i.codHistorial">
+                      <td scope="row">{{i.codHistorial}}</td>
+                      <td>{{i.zona}}</td>
+                      <td>{{i.nomJardin}}</td>
+                      <td>{{i.nombre}}</td>
+                    </tr>
+                  </tbody>
+                </table>
             </div>
         </div>
     </b-container>
@@ -309,6 +350,7 @@ export default {
         corrEquipos: [],
         equiposBuenEstado: [],
         equiposMalEstado: [],
+        historial: [],
         //Pestaña que indica la vista actual
         pestaña: 'equiposact',
         tipoMostrar: 'si',
@@ -337,7 +379,8 @@ export default {
         //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
-        mensaje: {color: '', texto: ''}
+        mensaje: {color: '', texto: ''},
+        activo: true
       }
     },
     validations:{
@@ -357,7 +400,7 @@ export default {
       dueño:{required},
     },
     computed: {
-      ...mapState(['token'])
+      ...mapState(['token', 'usuarioDB'])
     },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
@@ -366,12 +409,18 @@ export default {
       this.listarDueños();
       this.obtenerTipos();
       this.obtenerMarcas();
+      this.verificar();
     },
     methods: {
       alerta(color, texto){
         this.mensaje.color = color;
         this.mensaje.texto = texto;
         this.showAlert();
+      },
+      verificar(){
+        if(this.usuarioDB.data[0].tipoUsuario == 0){
+          this.activo = false;
+        }
       },
       //Activamos la vista de editar
       Acteditar(id, activo){
@@ -389,6 +438,40 @@ export default {
         }
         //Llamamos a la función que nos permite cargar los datos del equipo a editar
         this.obtenerEqpEditar(corrEqp)
+      },
+      //Activamos la vista de historial
+      ActHistorial(id, activo){
+        this.pestaña = 'historial'
+        this.botones = 'no'
+        $('#tablaSinDueño').DataTable().destroy();
+        $('#tablaBajas').DataTable().destroy();
+        $('#tablaConDueño').DataTable().destroy();
+        $("#historialEquipo").DataTable()
+        //Obtenemos el correlativo del equipo, si estamos en la vista de Equipos con dueño (activo=true) tendremos que buscarlo en el arreglo paralelo por la posición
+        if(activo){
+          const index = this.equiposAct.findIndex(item => item.codHistorial == id);
+          this.corr = this.corrEquipos[index]
+        }else{
+          this.corr = id;
+        }
+        //Llamamos a la función que nos permite cargar los datos del equipo a editar
+        this.obtHistorial()
+      },
+
+      //Función que permite cargar el historial de un equipo
+      obtHistorial(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/HistEquipo/${this.corr}`, config)
+          .then(res => {
+            this.historial = res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se ha podido cargar el historial');
+        })
       },
       //Función que obtiene todos los tipos
       obtenerTipos(){
@@ -451,30 +534,46 @@ export default {
       },
       //Funcion que quita un equipo a un funcionario
       quitar(id, estado){
-        let config = {
-          headers: {
-            token: this.token
+        swal.fire({
+            title: '¿Seguro que desea quitar el equipo?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: '¡Si!'
+        }).then((result) => {
+          if (result.value) {
+            let config = {
+              headers: {
+                token: this.token
+              }
+            }
+            this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
+              .then(res => {
+                const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
+                this.equiposAct.splice(index, 1)
+                this.corrEquipos.splice(index, 1)
+                Swal.fire(
+                  'Se ha quitado un equipo al funcionario!',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+              })
+              .catch(e => {
+                var mensaje = 'Posible error del sistema';
+                if(e.response.data.mensaje){
+                  mensaje = e.response.data.mensaje;
+                }
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido quitar el equipo a su funcionario',
+                  footer: mensaje
+                })
+              })
           }
-        }
-        this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
-          .then(res => {
-            const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
-            this.equiposAct.splice(index, 1)
-            this.corrEquipos.splice(index, 1)
-            Swal.fire(
-              'Se ha quitado un equipo al funcionario!',
-              'Seleccione Ok para continuar',
-              'success'
-            )
-          })
-          .catch(e => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'No se ha podido quitar el equipo a su funcionario',
-              footer: 'Posible error del sistema'
-            })
-          })
+        });
       },
       //Muestra la vista de los equipos con un dueño actual
       MostrarEquiposAct(){
@@ -563,19 +662,28 @@ export default {
         if(!this.$v.tipoNew.$invalid){
           this.axios.post('api/agregaTipo', {tipoEquipo: this.tipoNew}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha generado un nuevo tipo de equipo ',
-                'Seleccione Ok para continuar',
-                'success'
-              )
-              this.tipoMostrar = 'si';
-              this.obtenerTipos();
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha generado un nuevo tipo de equipo ',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+                this.tipoMostrar = 'si';
+                this.obtenerTipos();
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha creado este nuevo tipo',
+                  footer: 'Nombre ya se encuentra registrado'
+                })
+              }
             })
             .catch(e => {
               Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'No se ha crear este nuevo tipo',
+                text: 'No se ha creado este nuevo tipo',
                 footer: 'Posible error del sistema'
               })
           })
@@ -594,13 +702,22 @@ export default {
         if(!this.$v.marcaNew.$invalid){
           this.axios.post('api/agregaMarca', {nomMarca: this.marcaNew}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha generado una nueva marca ',
-                'Seleccione Ok para continuar',
-                'success'
-              )
-              this.tipoMostrar = 'si';
-              this.obtenerMarcas();
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha generado una nueva marca ',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+                this.tipoMostrar = 'si';
+                this.obtenerMarcas();
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha creado esta nueva marca',
+                  footer: 'Nombre ya se encuentra registrado'
+                })
+              }
             })
             .catch(e => {
               Swal.fire({
@@ -622,14 +739,23 @@ export default {
           }
         }
         this.$v.$touch()
-        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
+        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid && !this.$v.condicion.$invalid){
           this.axios.put(`api/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha editado al equipo satisfactoriamente',
-                'Seleccione Ok para continuar',
-                'success'
-              )
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha editado al equipo satisfactoriamente',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha actualizado el equipo',
+                  footer: 'Dato repetido asegurese de que el codigo o n° de serie no existan'
+                })
+              }
             })
             .catch(e => {
               this.alerta('danger', 'No se ha logrado editar al equipo');
@@ -640,6 +766,7 @@ export default {
       },
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
+        $('#historialEquipo').DataTable().destroy();
         this.pestaña = 'equiposact'
         this.botones = 'si'
         this.listarEquiposAct();
@@ -687,28 +814,40 @@ export default {
       },
       //Función que envia un equipo con un nuevo dueño
       EnviarEquipo(){
-        let config = {
-          headers: {
-            token: this.token
-          }
-        }
-        this.axios.post('api/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero}, config)
-          .then(res => {
-            Swal.fire(
-              'Se ha enviado un equipo al funcionario ' + this.dueño +'!',
-              'Seleccione Ok para continuar',
-              'success'
-            )
-            //location.reload();
+        swal.fire({
+            title: '¿Seguro que desea enviar este equipo al dueño ' + this.dueño + '?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: '¡Si!'
+        }).then((result) => {
+          if (result.value) {
+            let config = {
+              headers: {
+                token: this.token
+              }
+            }
+            this.axios.post('api/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero}, config)
+              .then(res => {
+                Swal.fire(
+                  'Se ha enviado un equipo al funcionario ' + this.dueño +'!',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+                //location.reload();
+              })
+              .catch(e => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido enviar el equipo',
+                  footer: 'Posible error del sistema'
+                })
+              })
+            }
           })
-          .catch(e => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'No se ha podido enviar el equipo',
-              footer: 'Posible error del sistema'
-            })
-        })
       },
       countDownChanged(dismissCountDown) {
         this.dismissCountDown = dismissCountDown
@@ -730,6 +869,7 @@ export default {
       await $('#tablaConDueño').DataTable()
       await $('#tablaSinDueño').DataTable();
       await $("#tablaBajas").DataTable()
+      await $("#historialEquipo").DataTable()
     },
     watch: {
       equiposAct(val) {
@@ -756,6 +896,14 @@ export default {
           });
         }
       },
+      historial(val) {
+        if(this.pestaña === 'historial'){
+          $('#historialEquipo').DataTable().destroy();
+          this.$nextTick(()=> {
+            $('#historialEquipo').DataTable()
+          });
+        }
+      }
     }
 };
 
@@ -771,7 +919,10 @@ export default {
     background-color: #eee;
   }
 
-  .botonmostrar{
+  .boton{
     margin: 20px;
+    width: 90%;
+    border-radius: 12px;
+    border-color: black;
   }
 </style>

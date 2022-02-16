@@ -1,24 +1,18 @@
 <template>
     <div class="wrapper fadeInDown">
             <div class="card-body" id="formContent">
-              <!-- Tabs Titles -->
-          
-              <!-- Icon -->
               <br>
               <div >
-              
-                  <img src="../assets/Logotipo_de_la_Junji.png" alt="" width="150px" class="imagen">  
+                  <img src="../assets/junji-2.png" alt="" width="150px" class="imagen">  
               </div>
               <br>
-              
-              <!-- Login Form -->
               <form @submit.prevent="submit">
                 <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.correo.$model" :class="{'is-invalid': $v.correo.$error}">
                 <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un correo</p>
                 <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
                 <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
                 <br>
-                <input type="submit" class="fadeIn fourth" value="Inicio de sesión" width="70px">
+                <input type="submit" class="fadeIn fourth" id= "inicioSesion" value="Inicio de sesión" width="70px">
               </form>
               <!-- Remind Passowrd -->
               <div id="formFooter">
@@ -224,12 +218,17 @@ input[type=text], input[type=password], input[type=number], input[type=email]  {
       border-radius: 10px 10px 10px 10px;
       background: #fff;
       padding: 30px;
-      width: 400%;
-      max-width: 350px;
+      width: 500%;
+      max-width: 500%;
       padding: 0px;
       box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
       text-align: center;
     }
+
+    #inicioSesion{
+      width: 83%;
+    }
+
 }
 </style>
     

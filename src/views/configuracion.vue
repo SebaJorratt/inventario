@@ -15,7 +15,7 @@
         <div class="mt-5">
           <div id="centro"> 
             <b-container>
-              <div class="card">
+              <div class="card" style="border-color: black;">
                   <div class="card-body">
                     <b-row>
                       <b-col cols="12" md="6">
@@ -35,30 +35,37 @@
                       </b-col>
                     </b-row>
                     <b-row v-if="contrasena === 'si'">
-                      <b-col cols="12" md="6">
+                      <b-col cols="12" md="4">
                         <div class="mb-3">
                           <label for="exampleInputEmail1" class="form-label">Contraseña Actual</label>
                           <input type="password" class="form-control" id="serieAgrega" aria-describedby="emailHelp" v-model="$v.password.$model">
                           <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
                         </div>
                       </b-col>
-                      <b-col cols="12" md="6">
+                      <b-col cols="12" md="4">
                         <div class="mb-3">
                           <label for="exampleInputEmail1" class="form-label">Nueva Contraseña</label>
                           <input type="password" class="form-control" id="marcaAgrega" aria-describedby="emailHelp" v-model="$v.newPassword.$model">
                           <p class="text-danger" v-if="!$v.newPassword.minLength">Mínimo de 6 caracteres</p>
                         </div>
                       </b-col>
+                      <b-col cols="12" md="4">
+                        <div class="mb-3">
+                          <label for="exampleInputEmail1" class="form-label">Confirmar Nueva Contraseña</label>
+                          <input type="password" class="form-control" id="marcaAgrega" aria-describedby="emailHelp" v-model="$v.newPasswordConfirm.$model">
+                          <p class="text-danger" v-if="!$v.newPasswordConfirm.sameAsPassword">Contraseña Incorrecta</p>
+                        </div>
+                      </b-col>
                     </b-row><br>
                     <b-row>
                       <b-col cols="12" md="6">
                         <div class="mb-3">
-                          <b-button @click="mostrarContra()" class="btn-warning botonmostrar">{{contra}}</b-button>
+                          <b-button @click="mostrarContra()" class="btn-warning botonmostrar boton">{{contra}}</b-button>
                         </div>
                       </b-col>
                       <b-col cols="12" md="6">
                         <div class="mb-3">
-                          <b-button @click="editarUsuario()" class="btn-success botonmostrar">Modificar mis Datos</b-button>
+                          <b-button @click="editarUsuario()" class="btn-success botonmostrar boton">Modificar mis Datos</b-button>
                         </div>
                       </b-col>
                     </b-row>
@@ -73,7 +80,7 @@
 
 <script>
 import navbar from "../components/navbar.vue";
-import { required, email, minLength } from "vuelidate/lib/validators";
+import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
 
 import { mapState } from 'vuex'
 
@@ -90,6 +97,7 @@ export default {
         email: '',
         password: '',
         newPassword: '',
+        newPasswordConfirm: '',
         //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
@@ -100,7 +108,8 @@ export default {
       nombre:{required, minLength: minLength(10)},
       email:{required,email},
       password:{minLength: minLength(6), required},
-      newPassword:{minLength: minLength(6), required}
+      newPassword:{minLength: minLength(6), required},
+      newPasswordConfirm:{sameAsPassword: sameAs('newPassword')}
     },
     created(){
       this.cargarUsuario();
@@ -151,22 +160,26 @@ export default {
               })
           }else{
             if(!this.$v.password.$invalid && !this.$v.newPassword.$invalid){
-              this.axios.put(`auth/actualizaUser`, {nomUsuario: this.nombre, correo: this.email, password: this.password, newPassword: this.newPassword}, config)
-                .then(res => {
-                      Swal.fire(
-                      'Se ha editado al usuario satisfactoriamente',
-                      'Seleccione Ok para continuar',
-                      'success'
-                      )
-                })
-                .catch(e => {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: e.response.data.mensaje,
-                    footer: 'Error al intentar Ingresar a su seción'
+              if(!this.$v.newPasswordConfirm.$invalid){
+                this.axios.put(`auth/actualizaUser`, {nomUsuario: this.nombre, correo: this.email, password: this.password, newPassword: this.newPassword}, config)
+                  .then(res => {
+                        Swal.fire(
+                        'Se ha editado al usuario satisfactoriamente',
+                        'Seleccione Ok para continuar',
+                        'success'
+                        )
                   })
-                })
+                  .catch(e => {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: e.response.data.mensaje,
+                      footer: 'Error al intentar Ingresar a su seción'
+                    })
+                  })
+              }else{
+                this.alerta('danger', 'Repita la contaseña correctamente');
+              }
             }else{
               this.alerta('danger', 'Porfavor ingrese su contraseña anterior y la nueva (Minmos 6 caracteres)');
             }

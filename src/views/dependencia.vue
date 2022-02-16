@@ -20,7 +20,7 @@
             <br>
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
-              <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'dependencias'">Agregar Dependencia</b-button>
+              <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'dependencias'" style="border-color: black;">Agregar Dependencia</b-button>
             </div>
             <!-- Listado de Funcionarios -->
             <div class="row">
@@ -47,20 +47,20 @@
                       <td>{{i.provincia}}</td>
                       <td>{{i.comuna}}</td>
                       <td>
-                        <b-button @click="Acteditar(i.codJardin)" class="btn-warning btn-sm">Editar</b-button>
+                        <b-button @click="Acteditar(i.codJardin)" class="btn-warning btn-sm" style="border-color: white;">Editar</b-button>
                       </td>
                       <td>
-                        <b-button @click="ActHistorial(i.codJardin)" class="btn-sm">Historial</b-button>
+                        <b-button @click="ActHistorial(i.codJardin)" class="btn-sm" style="border-color: white;">Historial</b-button>
                       </td>
                       <td>
-                        <b-button @click="EquiposActuales(i.codJardin)" class="btn-success btn-sm">Equipos Actuales</b-button>
+                        <b-button @click="EquiposActuales(i.codJardin)" class="btn-success btn-sm" style="border-color: white;">Equipos Actuales</b-button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
             </div>
           <!-- Agregar una dependencia -->
-          <div class="card" v-if="pestaña === 'agregar'">
+          <div class="card" v-if="pestaña === 'agregar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
                    <b-col cols="12" md="6">
@@ -115,12 +115,18 @@
                     </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="agregarDependencia()" class="btn btn-success m-3">Agregar Dependencia</button>
-              <button type="submit" @click="Volver()" class="btn btn-primary">Volver al Listado</button>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <button type="submit" @click="agregarDependencia()" class="btn btn-success m-3 boton">Agregar Dependencia</button>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <button type="submit" @click="Volver()" class="btn btn-primary boton">Volver al Listado</button>
+                  </b-col>
+                </b-row>
             </div>
           </div>
           <!-- Editar una dependencia-->
-          <div class="card" v-if="pestaña === 'editar'">
+          <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
                   <b-col cols="12" md="6">
@@ -166,13 +172,19 @@
                     </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="editarDependencia()" class="btn btn-success m-3">Editar Dependencia</button>
-              <button type="submit" @click="Volver()" class="btn btn-primary">Volver al Listado</button>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <button type="submit" @click="editarDependencia()" class="btn btn-success m-3 boton">Editar Dependencia</button>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <button type="submit" @click="Volver()" class="btn btn-primary boton">Volver al Listado</button>
+                  </b-col>
+                </b-row>
             </div>
           </div>
           <!-- Historial del funcionario -->
           <div class="row">
-            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'">Volver al listado de las Dependencias</b-button>
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de las Dependencias</b-button>
           </div>  
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialdependencias" v-if="pestaña === 'historial'">
@@ -204,7 +216,7 @@
             </div>
           <!-- Equipos Actuales del funcionario -->  
           <div class="row">
-            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'">Volver al listado de las Dependencias</b-button>
+            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'" style="border-color: black;">Volver al listado de las Dependencias</b-button>
           </div>
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="actualesdependencias" v-if="pestaña === 'actuales'">
@@ -218,7 +230,7 @@
                       <th scope="col">Marca</th>
                       <th scope="col">Funcionario</th>
                       <th scope="col">Zona</th>
-                      <th scope="col">Quitar Equipo</th>
+                      <th scope="col" v-if="activo">Quitar Equipo</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -231,8 +243,8 @@
                       <td>{{i.nomMarca}}</td>
                       <td>{{i.nombre}}</td>
                       <td>{{i.zona}}</td>
-                      <td>
-                        <b-button @click="quitar(i.codHistorial)" class="btn-danger btn-sm">Quitar</b-button>
+                      <td v-if="activo">
+                        <b-button @click="quitar(i.codHistorial)" class="btn-danger btn-sm" style="border-color: white;">Quitar</b-button>
                       </td>
                     </tr>
                   </tbody>
@@ -286,7 +298,8 @@ export default {
         //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
-        mensaje: {color: '', texto: ''}
+        mensaje: {color: '', texto: ''},
+        activo: true
       }
     },
     validations:{
@@ -303,15 +316,21 @@ export default {
       provincia:{required}
     },
     computed: {
-      ...mapState(['token'])
+      ...mapState(['token', 'usuarioDB'])
     },
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarDependencias();
       this.obtenerRegiones(true);
       this.listarDueños();
+      this.verificar();
     },
     methods: { //Vista inicial
+    verificar(){
+      if(this.usuarioDB.data[0].tipoUsuario == 0){
+        this.activo = false;
+      }
+    },
     //Función que obtiene los datos de las dependencias y los enviar al arreglo que cargara la tabla
       listarDependencias(){
         let config = {
@@ -572,7 +591,7 @@ export default {
                   icon: 'error',
                   title: 'Oops...',
                   text: 'No se ha podido actualizar la dependencia ' + this.nomJardin,
-                  footer: 'Ya existe una dependencia con estos datos revise la lista de dependencias'
+                  footer: 'Ya existe una dependencia con este nombre'
                 })
               }else{
               Swal.fire(
@@ -596,30 +615,46 @@ export default {
       },
       //Funcion que quita un equipo a una dependencia
       quitar(id){
-        let config = {
-          headers: {
-            token: this.token
+        swal.fire({
+            title: '¿Seguro que desea quitar el equipo?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: '¡Si!'
+        }).then((result) => {
+          if (result.value) {
+            let config = {
+              headers: {
+                token: this.token
+              }
+            }
+            this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
+              .then(res => {
+                const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
+                console.log(index);
+                this.equiposAct.splice(index, 1)
+                Swal.fire(
+                  'Se ha quitado un equipo a la Dependencia!',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+              })
+              .catch(e => {
+                var mensaje = 'Posible error del sistema';
+                if(e.response.data.mensaje){
+                  mensaje = e.response.data.mensaje;
+                }
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha podido quitar el equipo a la Dependencia',
+                  footer: mensaje
+                })
+              })
           }
-        }
-        this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
-          .then(res => {
-            const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
-            console.log(index);
-            this.equiposAct.splice(index, 1)
-            Swal.fire(
-              'Se ha quitado un equipo a la Dependencia!',
-              'Seleccione Ok para continuar',
-              'success'
-            )
-          })
-          .catch(e => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'No se ha podido quitar el equipo a la Dependencia',
-              footer: 'Posible error del sistema'
-            })
-          })
+        })
       },
       //Funciones de la alerta
       countDownChanged(dismissCountDown) {

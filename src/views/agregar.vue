@@ -15,7 +15,7 @@
     <div class="mt-5">
       <div id="centro"> 
         <b-container>
-          <div class="card">
+          <div class="card" style="border-color: black;">
                <div class="card-body">
                  <b-row>
                   <b-col cols="12" md="4">
@@ -41,8 +41,9 @@
                         <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
                       <input type="text" class="form-control" id="tiponewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.tipoNew.$model">
-                      <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
-                      <p class="text-danger" v-if="$v.tipo.$error">Es necesario determinar el tipo del equipo</p>
+                      <div v-if="tipoMostrar === 'no'">
+                        <p class="text-danger" v-if="$v.tipoNew.$error">Es necesario ingresar el nombre del tipo</p>
+                      </div>
                     </div>
                   </b-col>
                 </b-row>
@@ -63,8 +64,9 @@
                         <option v-for="i in marcas" :key="i.nomMarca">{{i.nomMarca}}</option>
                       </select>
                       <input type="text" class="form-control" id="marcanewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.marcaNew.$model">
-                      <p class="text-danger" v-if="$v.marcaNew.$error">Es necesario ingresar el nombre de la marca</p>
-                      <p class="text-danger" v-if="$v.marca.$error">Es necesario ingresar una marca</p>
+                      <div v-if="tipoMostrar === 'no'">
+                        <p class="text-danger" v-if="$v.marcaNew.$error">Es necesario ingresar el nombre de la marca</p>
+                      </div>
                     </div>
                   </b-col>
                 </b-row>
@@ -90,9 +92,15 @@
                   </b-col>
                 </b-row>
                 <br>
-              <button type="submit" @click="agregarEquipo()" class="btn btn-primary" v-if="tipoMostrar === 'si'">Agregar equipo</button>
-              <b-button @click="agregaTipo()" class="btn-success botonmostrar" v-if="tipoMostrar === 'no'">Agregar Tipo</b-button> &nbsp;
-              <b-button @click="agregaMarca()" class="btn-success botonmostrar" v-if="tipoMostrar === 'no'">Agregar Marca</b-button>
+              <button type="submit" @click="agregarEquipo()" class="btn btn-primary botonAgrega" v-if="tipoMostrar === 'si'">Agregar equipo</button>
+              <b-row>
+                  <b-col cols="12" md="6">
+                    <b-button @click="agregaTipo()" class="btn-success botonmostrar botonAgrega" v-if="tipoMostrar === 'no'">Agregar Tipo</b-button>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <b-button @click="agregaMarca()" class="btn-success botonmostrar botonAgrega" v-if="tipoMostrar === 'no'">Agregar Marca</b-button>
+                  </b-col>
+              </b-row>
             </div>
           </div>
         </b-container>
@@ -168,14 +176,23 @@ export default {
           }
         }
         this.$v.$touch()
-        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid){
+        if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid && !this.$v.condicion.$invalid){
           this.axios.post('api/agregaEquipo', {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, tipoEquipo: this.tipo, nomMarca: this.marca, estado: this.estado, condicion: this.condicion}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha creado un nuevo equipo!',
-                'Seleccione Ok para continuar',
-                'success'
-              )
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha creado un nuevo equipo!',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha creado este nuevo equipo',
+                  footer: 'Asegurese de que el codigo o el n° de serie no existan ya en los registros'
+                })
+              }
               //location.reload();
             })
             .catch(e => {
@@ -204,13 +221,22 @@ export default {
         if(!this.$v.tipoNew.$invalid){
           this.axios.post('api/agregaTipo', {tipoEquipo: this.tipoNew}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha generado un nuevo tipo de equipo ',
-                'Seleccione Ok para continuar',
-                'success'
-              )
-              this.tipoMostrar = 'si';
-              this.obtenerTipos();
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha generado un nuevo tipo de equipo ',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+                this.tipoMostrar = 'si';
+                this.obtenerTipos();
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha creado este nuevo tipo',
+                  footer: 'Nombre ya se encuentra registrado'
+                })
+              }
             })
             .catch(e => {
               Swal.fire({
@@ -234,13 +260,22 @@ export default {
         if(!this.$v.marcaNew.$invalid){
           this.axios.post('api/agregaMarca', {nomMarca: this.marcaNew}, config)
             .then(res => {
-              Swal.fire(
-                'Se ha generado una nueva marca ',
-                'Seleccione Ok para continuar',
-                'success'
-              )
-              this.tipoMostrar = 'si';
-              this.obtenerMarcas();
+              if(!res.data.sqlMessage){
+                Swal.fire(
+                  'Se ha generado una nueva marca ',
+                  'Seleccione Ok para continuar',
+                  'success'
+                )
+                this.tipoMostrar = 'si';
+                this.obtenerMarcas();
+              }else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'No se ha creado esta nueva marca',
+                  footer: 'Nombre ya se encuentra registrado'
+                })
+              }
             })
             .catch(e => {
               Swal.fire({
@@ -328,4 +363,11 @@ body {
 #centro {
   display: block;
 }
+
+.botonAgrega{
+    margin: 20px;
+    width: 50%;
+    border-radius: 12px;
+    border-color: black;
+  }
 </style>
