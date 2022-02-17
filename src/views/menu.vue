@@ -64,5 +64,11 @@ export default {
     padding-top: 20px;
     padding-bottom: 20px;
   }
+  .boton{
+    margin: 20px;
+    width: 90%;
+    border-radius: 12px;
+    border-color: black;
+  }
 </style>
 

@@ -27,7 +27,7 @@
               </b-col>
               <b-col cols="12" md="4">
                 <div class="mb-1">
-                  <b-button @click="EquiposBuenEstado()" class="btn-succes btn-warning boton">Equipos sin Usuario</b-button>
+                  <b-button @click="EquiposBuenEstado()" class="btn-warning boton">Equipos sin Usuario</b-button>
                 </div>
               </b-col>
               <b-col cols="12" md="4">
@@ -77,6 +77,9 @@
                 </tr>
               </tbody>
             </table>
+            <br><div class="mb-1">
+              <b-button @click="exportar(1)" v-if="pestaña === 'equiposact'" class="btn-success boton">Exportar</b-button>
+            </div>
             <!-- Tabla de equipos sin dueños que estan en buen estado -->
             <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="tablaSinDueño" v-if="pestaña === 'equiposNoAct'">
               <thead>
@@ -112,6 +115,9 @@
                 </tr>
               </tbody>
             </table>
+            <br><div class="mb-1">
+              <b-button @click="exportar(2)" v-if="pestaña === 'equiposNoAct'" class="btn-success boton">Exportar</b-button>
+            </div>
             <!-- Tabla de equipos sin dueños que estan en MAL estado -->
             <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="tablaBajas" v-if="pestaña === 'equiposBaja'">
               <thead>
@@ -143,6 +149,9 @@
                 </tr>
               </tbody>
             </table>
+            <br><div class="mb-1">
+              <b-button @click="exportar(3)" v-if="pestaña === 'equiposBaja'" class="btn-success boton">Exportar</b-button>
+            </div>
             <!-- Editar un Equipo -->
               <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                 <div class="card-body">
@@ -307,20 +316,27 @@
                   <thead>
                     <tr>
                       <th scope="col">Id</th>
+                      <th scope="col">Codigo Equipo</th>
                       <th scope="col">Zona</th>
                       <th scope="col">Jardin</th>
                       <th scope="col">Usuario</th>
+                      <th scope="col">Fecha</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="i in historial" :key="i.codHistorial">
                       <td scope="row">{{i.codHistorial}}</td>
+                      <td>{{i.codEquipo}}</td>
                       <td>{{i.zona}}</td>
                       <td>{{i.nomJardin}}</td>
                       <td>{{i.nombre}}</td>
+                      <td>{{i.fecha}}</td>
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(4)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
         </div>
     </b-container>
@@ -335,6 +351,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
+
+import * as XLSX from 'xlsx/xlsx.mjs';
+
+/* load 'fs' for readFile and writeFile support */
+import * as fs from 'fs';
+XLSX.set_fs(fs);
+
+/* load the codepage support library for extended support with older formats  */
+import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
+XLSX.set_cptable(cpexcel);
 
 import { mapState } from 'vuex'
 
@@ -412,6 +438,42 @@ export default {
       this.verificar();
     },
     methods: {
+      exportar(num) {
+        let data = [];
+        var filename = "planilla";
+        if(num === 1){
+          var arreglado = this.equiposAct.map( item => { 
+            return { ID: item.codHistorial , Tipo : item.tipoEquipo, Serie : item.serie, Estado : item.estado, CodigoEquipo : item.codEquipo,  Dependencia : item.nomJardin, CodigoDependencia : item.codJardin, Usuario : item.nombre, Zona : item.zona}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Equipos con Usuario'
+        }else if(num === 2){
+          var arreglado = this.equiposBuenEstado.map( item => { 
+            return { ID: item.corrEquipo , Tipo : item.tipoEquipo, Serie : item.serie, CodigoEquipo : item.codEquipo,  Marca : item.nomMarca, Modelo : item.modelo}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Equipos sin Usuario'
+        }else if(num === 3){
+          var arreglado = this.equiposMalEstado.map( item => { 
+            return { ID: item.corrEquipo , Tipo : item.tipoEquipo, Serie : item.serie, CodigoEquipo : item.codEquipo,  Marca : item.nomMarca, Modelo : item.modelo}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Equipos dados de Baja'
+        }else if(num === 4){
+          var arreglado = this.historial.map( item => { 
+            return { ID: item.codHistorial , Codigo : item.codEquipo, Zona : item.zona, Dependencia : item.nomJardin,  Usuario : item.nombre, Fecha : item.fecha}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          if(arreglado[0]){
+            filename = 'Historial Equipo ' + arreglado[0].Codigo
+          }else{
+            filename = 'Historial Equipo'
+          }
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, data, filename);
+        XLSX.writeFile(workbook, `${filename}.xlsx`);
+      },
       alerta(color, texto){
         this.mensaje.color = color;
         this.mensaje.texto = texto;
@@ -532,8 +594,15 @@ export default {
             this.pestaña = 'equiposact';
           })
       },
+      convertDateMysql(yourDate){
+        yourDate.toISOString().split('T')[0]
+        const offset = yourDate.getTimezoneOffset()
+        yourDate = new Date(yourDate.getTime() - (offset*60*1000))
+        return yourDate.toISOString().split('T')[0]
+		  },
       //Funcion que quita un equipo a un funcionario
-      quitar(id, estado){
+      quitar(id, estado){ 
+        var dt = this.convertDateMysql(new Date())
         swal.fire({
             title: '¿Seguro que desea quitar el equipo?',
             type: 'warning',
@@ -549,7 +618,7 @@ export default {
                 token: this.token
               }
             }
-            this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
+            this.axios.put(`api/actualizaHistorial/${id}`, {fecha: dt}, config)
               .then(res => {
                 const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
                 this.equiposAct.splice(index, 1)

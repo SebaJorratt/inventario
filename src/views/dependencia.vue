@@ -21,7 +21,7 @@
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
               <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'dependencias'" style="border-color: black;">Agregar Dependencia</b-button>
-            </div>
+            </div><br>
             <!-- Listado de Funcionarios -->
             <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="dependencias" v-if="pestaña === 'dependencias'">
@@ -58,6 +58,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(3)" v-if="pestaña === 'dependencias'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
           <!-- Agregar una dependencia -->
           <div class="card" v-if="pestaña === 'agregar'" style="border-color: black;">
@@ -185,7 +188,7 @@
           <!-- Historial del funcionario -->
           <div class="row">
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de las Dependencias</b-button>
-          </div>  
+          </div>  <br>
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialdependencias" v-if="pestaña === 'historial'">
                   <thead>
@@ -197,6 +200,7 @@
                       <th scope="col">Modelo</th>
                       <th scope="col">Marca</th>
                       <th scope="col">Funcionario</th>
+                      <th scope="col">Fecha</th>
                       <th scope="col">Zona</th>
                     </tr>
                   </thead>
@@ -209,15 +213,19 @@
                       <td>{{i.modelo}}</td>
                       <td>{{i.nomMarca}}</td>
                       <td>{{i.nombre}}</td>
+                      <td>{{i.fecha}}</td>
                       <td>{{i.zona}}</td>
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(2)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
           <!-- Equipos Actuales del funcionario -->  
           <div class="row">
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'" style="border-color: black;">Volver al listado de las Dependencias</b-button>
-          </div>
+          </div><br>
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="actualesdependencias" v-if="pestaña === 'actuales'">
                   <thead>
@@ -249,6 +257,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(1)" v-if="pestaña === 'actuales'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
         </div>
     </b-container>
@@ -263,6 +274,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
+
+import * as XLSX from 'xlsx/xlsx.mjs';
+
+/* load 'fs' for readFile and writeFile support */
+import * as fs from 'fs';
+XLSX.set_fs(fs);
+
+/* load the codepage support library for extended support with older formats  */
+import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
+XLSX.set_cptable(cpexcel);
 
 import { mapState } from 'vuex'
 
@@ -325,12 +346,39 @@ export default {
       this.listarDueños();
       this.verificar();
     },
-    methods: { //Vista inicial
-    verificar(){
-      if(this.usuarioDB.data[0].tipoUsuario == 0){
-        this.activo = false;
-      }
-    },
+    methods: { 
+      exportar(num) {
+        let data = [];
+        var filename = "planilla";
+        if(num === 1){
+          var arreglado = this.equiposAct.map( item => { 
+            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Funcionario : item.nombre, Zona : item.zona};
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'EqpsDep' + this.codigoEditar
+        }else if(num === 2){
+          var arreglado = this.historial.map( item => { 
+            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Funcionario : item.nombre, Fecha : item.fecha, Zona : item.zona};
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'HistDep' + this.codigoEditar
+        }else if(num === 3){
+          var arreglado = this.dependencias.map( item => { 
+            return { Codigo: item.codJardin , Nombre : item.nomJardin, Encargado : item.nombre, Región : item.region, Provincia : item.provincia, Comuna : item.comuna}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Dependencias'
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, data, filename);
+        XLSX.writeFile(workbook, `${filename}.xlsx`);
+      },
+
+      verificar(){
+        if(this.usuarioDB.data[0].tipoUsuario == 0){
+          this.activo = false;
+        }
+      },
     //Función que obtiene los datos de las dependencias y los enviar al arreglo que cargara la tabla
       listarDependencias(){
         let config = {
@@ -613,8 +661,15 @@ export default {
           this.alerta('danger', 'Ingrese un nombre valido');
         }
       },
+      convertDateMysql(yourDate){
+        yourDate.toISOString().split('T')[0]
+        const offset = yourDate.getTimezoneOffset()
+        yourDate = new Date(yourDate.getTime() - (offset*60*1000))
+        return yourDate.toISOString().split('T')[0]
+		  },
       //Funcion que quita un equipo a una dependencia
       quitar(id){
+        var dt = this.convertDateMysql(new Date())
         swal.fire({
             title: '¿Seguro que desea quitar el equipo?',
             type: 'warning',
@@ -630,7 +685,7 @@ export default {
                 token: this.token
               }
             }
-            this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
+            this.axios.put(`api/actualizaHistorial/${id}`, {fecha: dt}, config)
               .then(res => {
                 const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
                 console.log(index);
@@ -713,9 +768,10 @@ export default {
     background-color: #eee;
   }
 
-  .botonAgregar{
+  .boton{
     margin: 20px;
-    position: relative;
-    left: -18px;
+    width: 90%;
+    border-radius: 12px;
+    border-color: black;
   }
 </style>

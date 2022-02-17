@@ -364,9 +364,9 @@ body {
   display: block;
 }
 
-.botonAgrega{
+.boton{
     margin: 20px;
-    width: 50%;
+    width: 90%;
     border-radius: 12px;
     border-color: black;
   }

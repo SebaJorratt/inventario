@@ -221,4 +221,10 @@ export default {
   body{
     background-color: #eee;
   }
+  .boton{
+    margin: 20px;
+    width: 90%;
+    border-radius: 12px;
+    border-color: black;
+  }
 </style>

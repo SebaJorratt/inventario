@@ -21,7 +21,7 @@
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
               <b-button @click="agregar()" class="btn-success botonAgregar" style="border-color: black;" v-if="pestaña === 'funcionarios'">Agregar Funcionario</b-button>
-            </div>
+            </div><br>
             <!-- Listado de Funcionarios -->
             <div class="row">
                 <table id='funcionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'funcionarios'">
@@ -56,6 +56,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(3)" v-if="pestaña === 'funcionarios'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
           <!-- Agregar un funcionario -->
           <div class="card" v-if="pestaña === 'agregar'" style="border-color: black;">
@@ -161,7 +164,7 @@
           <!-- Historial del funcionario -->
           <div class="row">
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Funcionarios</b-button>
-          </div>
+          </div><br>
           <div class="row">
               <div class="table-responsive">
                   <table id='historialfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
@@ -174,6 +177,7 @@
                         <th scope="col">Modelo</th>
                         <th scope="col">Marca</th>
                         <th scope="col">Dependencia</th>
+                        <th scope="col">Fecha</th>
                         <th scope="col">Zona</th>
                       </tr>
                     </thead>
@@ -186,16 +190,20 @@
                         <td>{{i.modelo}}</td>
                         <td>{{i.nomMarca}}</td>
                         <td>{{i.nomJardin}}</td>
+                        <td>{{i.fecha}}</td>
                         <td>{{i.zona}}</td>
                       </tr>
                     </tbody>
                   </table>
+                  <br><div class="mb-1">
+                  <b-button @click="exportar(2)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
+                </div>
               </div>
             </div>
           <!-- Equipos Actuales del funcionario -->  
           <div class=row>
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'" style="border-color: black;">Volver al listado de Funcionarios</b-button>
-          </div>
+          </div><br>
           <div class="row">
                 <table id='actualesfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
                   <thead>
@@ -227,6 +235,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <br><div class="mb-1">
+                  <b-button @click="exportar(1)" v-if="pestaña === 'actuales'" class="btn-success boton">Exportar</b-button>
+                </div>
             </div>
         </div>
     </b-container>
@@ -242,7 +253,18 @@ import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
 
+import * as XLSX from 'xlsx/xlsx.mjs';
+
+/* load 'fs' for readFile and writeFile support */
+import * as fs from 'fs';
+XLSX.set_fs(fs);
+
+/* load the codepage support library for extended support with older formats  */
+import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
+XLSX.set_cptable(cpexcel);
+
 import { mapState } from 'vuex'
+
 export default {
   name: "about",
   components: {
@@ -295,12 +317,39 @@ export default {
       this.listarFuncionarios();
       this.verificar();
     },
-    methods: { //Vista inicial
-    verificar(){
-      if(this.usuarioDB.data[0].tipoUsuario == 0){
-        this.activo = false;
-      }
-    },
+    methods: {
+      exportar(num) {
+        let data = [];
+        var filename = "planilla";
+        if(num === 1){
+          var arreglado = this.equiposAct.map( item => { 
+            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Dependencia : item.nomJardin, Zona : item.zona}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Equipos del Usuario ' + this.codigoEditar
+        }else if(num === 2){
+          var arreglado = this.historial.map( item => { 
+            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Dependencia : item.nomJardin, Fecha : item.fecha, Zona : item.zona};
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Historial del Usuario' + this.codigoEditar
+        }else if(num === 3){
+          var arreglado = this.funcionarios.map( item => { 
+            return { Codigo: item.codigo , Nombre : item.nombre, CodigoFuncionario : item.codFuncionario, Rut : item.rut,  Correo : item.correo}; 
+          });
+          data = XLSX.utils.json_to_sheet(arreglado);
+          filename = 'Funcionarios'
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, data, filename);
+        XLSX.writeFile(workbook, `${filename}.xlsx`);
+      },
+
+      verificar(){
+        if(this.usuarioDB.data[0].tipoUsuario == 0){
+          this.activo = false;
+        }
+      },
     //Función que obtiene los datos de los funcionarios y los enviar al arreglo que cargara la tabla
       listarFuncionarios(){
         let config = {
@@ -488,8 +537,15 @@ export default {
           this.alerta('danger', 'Ingrese un correo valido');
         }
       },
+      convertDateMysql(yourDate){
+        yourDate.toISOString().split('T')[0]
+        const offset = yourDate.getTimezoneOffset()
+        yourDate = new Date(yourDate.getTime() - (offset*60*1000))
+        return yourDate.toISOString().split('T')[0]
+		  },
       //Funcion que quita un equipo a un funcionario
       quitar(id, estado){
+        var dt = this.convertDateMysql(new Date())
         swal.fire({
             title: '¿Seguro que desea quitar el equipo?',
             type: 'warning',
@@ -505,7 +561,7 @@ export default {
                 token: this.token
               }
             }
-            this.axios.put(`api/actualizaHistorial/${id}`, {}, config)
+            this.axios.put(`api/actualizaHistorial/${id}`, {fecha: dt}, config)
               .then(res => {
                 const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
                 console.log(index);
@@ -590,9 +646,10 @@ export default {
     background-color: #eee;
   }
 
-  .botonAgregar{
+  .boton{
     margin: 20px;
-    position: relative;
-    left: -18px;
+    width: 90%;
+    border-radius: 12px;
+    border-color: black;
   }
 </style>
