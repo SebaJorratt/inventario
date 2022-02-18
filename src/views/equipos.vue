@@ -77,7 +77,7 @@
                 </tr>
               </tbody>
             </table>
-            <br><div class="mb-1">
+            <br v-if="pestaña === 'equiposact'"><div class="mb-1">
               <b-button @click="exportar(1)" v-if="pestaña === 'equiposact'" class="btn-success boton">Exportar</b-button>
             </div>
             <!-- Tabla de equipos sin dueños que estan en buen estado -->
@@ -115,7 +115,7 @@
                 </tr>
               </tbody>
             </table>
-            <br><div class="mb-1">
+            <br v-if="pestaña === 'equiposNoAct'"><div class="mb-1">
               <b-button @click="exportar(2)" v-if="pestaña === 'equiposNoAct'" class="btn-success boton">Exportar</b-button>
             </div>
             <!-- Tabla de equipos sin dueños que estan en MAL estado -->
@@ -149,7 +149,7 @@
                 </tr>
               </tbody>
             </table>
-            <br><div class="mb-1">
+            <br v-if="pestaña === 'equiposBaja'"><div class="mb-1">
               <b-button @click="exportar(3)" v-if="pestaña === 'equiposBaja'" class="btn-success boton">Exportar</b-button>
             </div>
             <!-- Editar un Equipo -->
@@ -310,7 +310,7 @@
             <!-- Historial de un Equipo -->
             <div class="row">
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Equipos</b-button>
-          </div>  
+          </div>  <br>
           <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialEquipo" v-if="pestaña === 'historial'">
                   <thead>

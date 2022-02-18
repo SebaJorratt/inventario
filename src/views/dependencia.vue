@@ -21,7 +21,7 @@
             <!-- Boton para ir a agregar un Funcionario -->
             <div class="row">
               <b-button @click="agregar()" class="btn-success botonAgregar" v-if="pestaña === 'dependencias'" style="border-color: black;">Agregar Dependencia</b-button>
-            </div><br>
+            </div><br v-if="pestaña === 'dependencias'">
             <!-- Listado de Funcionarios -->
             <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="dependencias" v-if="pestaña === 'dependencias'">
@@ -58,7 +58,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <br><div class="mb-1">
+                <br v-if="pestaña === 'dependencias'"><div class="mb-1">
                   <b-button @click="exportar(3)" v-if="pestaña === 'dependencias'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>
@@ -218,7 +218,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <br><div class="mb-1">
+                <br v-if="pestaña === 'historial'"><div class="mb-1">
                   <b-button @click="exportar(2)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>
@@ -257,7 +257,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <br><div class="mb-1">
+                <br v-if="pestaña === 'actuales'"><div class="mb-1">
                   <b-button @click="exportar(1)" v-if="pestaña === 'actuales'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>

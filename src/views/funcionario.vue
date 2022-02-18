@@ -56,7 +56,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <br><div class="mb-1">
+                <br v-if="pestaña === 'funcionarios'"><div class="mb-1">
                   <b-button @click="exportar(3)" v-if="pestaña === 'funcionarios'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>
@@ -164,7 +164,7 @@
           <!-- Historial del funcionario -->
           <div class="row">
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Funcionarios</b-button>
-          </div><br>
+          </div><br v-if="pestaña === 'historial'">
           <div class="row">
               <div class="table-responsive">
                   <table id='historialfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'historial'">
@@ -195,7 +195,7 @@
                       </tr>
                     </tbody>
                   </table>
-                  <br><div class="mb-1">
+                  <br v-if="pestaña === 'historial'"><div class="mb-1">
                   <b-button @click="exportar(2)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
                 </div>
               </div>
@@ -203,7 +203,7 @@
           <!-- Equipos Actuales del funcionario -->  
           <div class=row>
             <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'actuales'" style="border-color: black;">Volver al listado de Funcionarios</b-button>
-          </div><br>
+          </div><br v-if="pestaña === 'actuales'">
           <div class="row">
                 <table id='actualesfuncionarios' class="table table-striped table-dark table-responsive-lg table-responsive-md" v-if="pestaña === 'actuales'">
                   <thead>
@@ -235,7 +235,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <br><div class="mb-1">
+                <br v-if="pestaña === 'actuales'"><div class="mb-1">
                   <b-button @click="exportar(1)" v-if="pestaña === 'actuales'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>
