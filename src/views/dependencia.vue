@@ -200,7 +200,8 @@
                       <th scope="col">Modelo</th>
                       <th scope="col">Marca</th>
                       <th scope="col">Funcionario</th>
-                      <th scope="col">Fecha</th>
+                      <th scope="col">Desde</th>
+                      <th scope="col">Hasta</th>
                       <th scope="col">Zona</th>
                     </tr>
                   </thead>
@@ -213,6 +214,7 @@
                       <td>{{i.modelo}}</td>
                       <td>{{i.nomMarca}}</td>
                       <td>{{i.nombre}}</td>
+                      <td>{{i.fechaInicio}}</td>
                       <td>{{i.fecha}}</td>
                       <td>{{i.zona}}</td>
                     </tr>
@@ -237,6 +239,7 @@
                       <th scope="col">Modelo</th>
                       <th scope="col">Marca</th>
                       <th scope="col">Funcionario</th>
+                      <th scope="col">Fecha</th>
                       <th scope="col">Zona</th>
                       <th scope="col" v-if="activo">Quitar Equipo</th>
                     </tr>
@@ -250,6 +253,7 @@
                       <td>{{i.modelo}}</td>
                       <td>{{i.nomMarca}}</td>
                       <td>{{i.nombre}}</td>
+                      <td>{{i.fechaInicio}}</td>
                       <td>{{i.zona}}</td>
                       <td v-if="activo">
                         <b-button @click="quitar(i.codHistorial)" class="btn-danger btn-sm" style="border-color: white;">Quitar</b-button>
@@ -358,7 +362,7 @@ export default {
           filename = 'EqpsDep' + this.codigoEditar
         }else if(num === 2){
           var arreglado = this.historial.map( item => { 
-            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Funcionario : item.nombre, Fecha : item.fecha, Zona : item.zona};
+            return { ID: item.codHistorial , CodigoEquipo : item.codEquipo, Tipo : item.tipoEquipo, Serie : item.serie, Modelo : item.modelo, Marca : item.nomMarca, Funcionario : item.nombre, Desde : item.fechaInicio, Hasta : item.fecha, Zona : item.zona};
           });
           data = XLSX.utils.json_to_sheet(arreglado);
           filename = 'HistDep' + this.codigoEditar

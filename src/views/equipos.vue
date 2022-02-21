@@ -9,6 +9,7 @@
           <h1 v-else-if="pestaña == 'equiposNoAct'">Listado de Equipos sin Usuario</h1>
           <h1 v-else-if="pestaña == 'equiposBaja'">Listado de Equipos Dados de Baja</h1>
           <h1 v-else-if="pestaña == 'historial'">Historial del Equipo</h1>
+          <h1 v-else-if="pestaña == 'word'">Exportar a Documanto Word</h1>
           <b-alert
             :show="dismissCountDown"
             dismissible
@@ -46,9 +47,9 @@
                   <th scope="col">Codigo</th>
                   <th scope="col">Estado</th>
                   <th scope="col">Jardin</th>
-                  <th scope="col">Codigo Jardin</th>
                   <th scope="col">Usuario</th>
                   <th scope="col">Zona</th>
+                  <th scope="col">Fecha Asignación</th>
                   <th scope="col">Mostrar Equipo</th>
                   <th scope="col">Historial</th>
                   <th scope="col" v-if="activo">Quitar Equipo</th>
@@ -62,9 +63,9 @@
                   <td>{{i.codEquipo}}</td>
                   <td>{{i.estado}}</td>
                   <td>{{i.nomJardin}}</td>
-                  <td>{{i.codJardin}}</td>
                   <td>{{i.nombre}}</td>
                   <td>{{i.zona}}</td>
+                  <td>{{i.fechaInicio}}</td>
                   <td>
                     <b-button @click="Acteditar(i.codHistorial, true)" class="btn-warning btn-sm" style="border-color: white;">Mostrar Mas</b-button>
                   </td>
@@ -130,6 +131,7 @@
                   <th scope="col">Modelo</th>
                   <th scope="col">Mostrar Equipo</th>
                   <th scope="col">Historial</th>
+                  <th scope="col">Exportar</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,6 +147,9 @@
                   </td>
                   <td>
                     <b-button @click="ActHistorial(i.corrEquipo, false)" class="btn-sm" style="border-color: white;">Historial</b-button>
+                  </td>
+                  <td>
+                    <b-button @click="Export2Doc('exportContent', 'Informe' + i.codEquipo)" class="btn-success btn-sm" style="border-color: white;">Exportar</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -309,9 +314,9 @@
             </div>
             <!-- Historial de un Equipo -->
             <div class="row">
-            <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Equipos</b-button>
-          </div>  <br>
-          <div class="row">
+              <b-button @click="Volver()" class="botonAgregar" v-if="pestaña === 'historial'" style="border-color: black;">Volver al listado de Equipos</b-button>
+            </div>  <br v-if="pestaña === 'historial'">
+            <div class="row">
                 <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="historialEquipo" v-if="pestaña === 'historial'">
                   <thead>
                     <tr>
@@ -320,7 +325,8 @@
                       <th scope="col">Zona</th>
                       <th scope="col">Jardin</th>
                       <th scope="col">Usuario</th>
-                      <th scope="col">Fecha</th>
+                      <th scope="col">Desde</th>
+                      <th scope="col">Hasta</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -330,6 +336,7 @@
                       <td>{{i.zona}}</td>
                       <td>{{i.nomJardin}}</td>
                       <td>{{i.nombre}}</td>
+                      <td>{{i.fechaInicio}}</td>
                       <td>{{i.fecha}}</td>
                     </tr>
                   </tbody>
@@ -338,6 +345,98 @@
                   <b-button @click="exportar(4)" v-if="pestaña === 'historial'" class="btn-success boton">Exportar</b-button>
                 </div>
             </div>
+            <!-- Vista de Exportación -->
+            <div class="card" style="border-color: black;" v-if="pestaña === 'word'">
+                <div class="card-body">
+                 <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Tipo del equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.tipoExportar.$model">
+                      <p class="text-danger" v-if="$v.tipoExportar.$error" >Es necesario ingresar el tipo del equipo</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Clasificación</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.clasificacionExportar.$model">
+                      <p class="text-danger" v-if="$v.clasificacionExportar.$error" >Es necesario ingresar la clasificación del equipo</p>
+                    </div>
+                  </b-col>
+                 </b-row>
+                 <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Ubicación del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.ubicacionExportar.$model">
+                      <p class="text-danger" v-if="$v.ubicacionExportar.$error" >Es necesario ingresar la ubicación del equipo</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Encargado del Informe</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.duenoExportar.$model">
+                      <p class="text-danger" v-if="$v.duenoExportar.$error" >Es necesario ingresar al usuario del equipo</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="12">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Introducción</label>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Introduccion.$model"></textarea>
+                      <p class="text-danger" v-if="$v.Introduccion.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="12">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Objetivo</label>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.objetivo.$model"></textarea>
+                      <p class="text-danger" v-if="$v.objetivo.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="12">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Deficiencias generales observadas</label>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.deficiencias.$model"></textarea>
+                      <p class="text-danger" v-if="$v.deficiencias.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Usuario del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Usuario.$model">
+                      <p class="text-danger" v-if="$v.Usuario.$error" >Es necesario indicar al usuario</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Dirección del Usuario</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Direccion.$model">
+                      <p class="text-danger" v-if="$v.Direccion.$error">Es necesario indicar la dirección del usuario</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <b-button @click="Volver()" href="#" class="botonmostrar boton">Volver al listado</b-button>
+                    </div>
+                  </b-col>  
+                  <b-col cols="12" md="6">
+                    <div class="mb-3">
+                      <b-button @click="Exportar()" class="btn-success botonmostrar boton">Generar Informe</b-button>
+                    </div>
+                  </b-col>  
+                </b-row>
+              </div>
+            </div>
         </div>
     </b-container>
   </div>
@@ -345,7 +444,8 @@
 
 <script>
 import navbar from "../components/navbar.vue";
-import { required} from "vuelidate/lib/validators";
+
+import { required, minLength} from "vuelidate/lib/validators";
 import 'jquery/dist/jquery.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
@@ -406,7 +506,17 @@ export default {
         dismissSecs: 5,
         dismissCountDown: 0,
         mensaje: {color: '', texto: ''},
-        activo: true
+        activo: true,
+        //VARIABLES DE EXPORTACION
+        tipoExportar: '',
+        clasificacionExportar: '',
+        ubicacionExportar: '',
+        duenoExportar: '',
+        Introduccion: '',
+        objetivo: '',
+        deficiencias: '',
+        Usuario: '',
+        Direccion: ''
       }
     },
     validations:{
@@ -424,6 +534,15 @@ export default {
       zona:{required},
       nombre:{required},
       dueño:{required},
+      tipoExportar: {required},
+      clasificacionExportar: {required},
+      ubicacionExportar: {required},
+      duenoExportar: {required},
+      Introduccion: {required, minLength: minLength(500)},
+      objetivo: {required, minLength: minLength(500)},
+      deficiencias: {required, minLength: minLength(500)},
+      Usuario: {required},
+      Direccion: {required},
     },
     computed: {
       ...mapState(['token', 'usuarioDB'])
@@ -461,7 +580,7 @@ export default {
           filename = 'Equipos dados de Baja'
         }else if(num === 4){
           var arreglado = this.historial.map( item => { 
-            return { ID: item.codHistorial , Codigo : item.codEquipo, Zona : item.zona, Dependencia : item.nomJardin,  Usuario : item.nombre, Fecha : item.fecha}; 
+            return { ID: item.codHistorial , Codigo : item.codEquipo, Zona : item.zona, Dependencia : item.nomJardin,  Usuario : item.nombre, Desde : item.fechaInicio, Hasta : item.fecha}; 
           });
           data = XLSX.utils.json_to_sheet(arreglado);
           if(arreglado[0]){
@@ -883,8 +1002,9 @@ export default {
       },
       //Función que envia un equipo con un nuevo dueño
       EnviarEquipo(){
+        var dt = this.convertDateMysql(new Date())
         swal.fire({
-            title: '¿Seguro que desea enviar este equipo al dueño ' + this.dueño + '?',
+            title: '¿Seguro que desea asignar este equipo al usuario ' + this.dueño + '?',
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -898,10 +1018,10 @@ export default {
                 token: this.token
               }
             }
-            this.axios.post('api/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero}, config)
+            this.axios.post('api/agregaHistorial', {zona: this.zona, nombre: this.dueño, nomJardin: this.nombre, corrEquipo: this.numero, fechaInicio: dt}, config)
               .then(res => {
                 Swal.fire(
-                  'Se ha enviado un equipo al funcionario ' + this.dueño +'!',
+                  'Se ha asignado un equipo al funcionario ' + this.dueño +'!',
                   'Seleccione Ok para continuar',
                   'success'
                 )
@@ -931,6 +1051,13 @@ export default {
         }else{
           this.tipoMostrar = 'no'
         }
+      },
+      Export2Doc(){
+        this.pestaña = 'word'
+        this.botones = 'no'
+        $('#tablaSinDueño').DataTable().destroy();
+        $('#tablaBajas').DataTable().destroy();
+        $('#tablaConDueño').DataTable().destroy();
       }
     },
     //Prepara las tablas como Datatables de JQuery

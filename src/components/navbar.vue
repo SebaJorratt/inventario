@@ -37,6 +37,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
+    name: "navbar",
     methods:{
         ...mapActions(['cerrarSesion']),
         cargarUsuario(){
