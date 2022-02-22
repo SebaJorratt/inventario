@@ -131,7 +131,7 @@
                   <th scope="col">Modelo</th>
                   <th scope="col">Mostrar Equipo</th>
                   <th scope="col">Historial</th>
-                  <th scope="col">Exportar</th>
+                  <th scope="col">Informe</th>
                 </tr>
               </thead>
               <tbody>
@@ -431,7 +431,7 @@
                   </b-col>  
                   <b-col cols="12" md="6">
                     <div class="mb-3">
-                      <b-button @click="Exportar()" class="btn-success botonmostrar boton">Generar Informe</b-button>
+                      <b-button @click="createDoc()" class="btn-success botonmostrar boton">Generar Informe</b-button>
                     </div>
                   </b-col>  
                 </b-row>
@@ -452,15 +452,28 @@ import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from 'jquery'; 
 
+//EXCEL eXportación
 import * as XLSX from 'xlsx/xlsx.mjs';
-
 /* load 'fs' for readFile and writeFile support */
 import * as fs from 'fs';
 XLSX.set_fs(fs);
-
 /* load the codepage support library for extended support with older formats  */
 import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
 XLSX.set_cptable(cpexcel);
+
+//Exportación Word
+import {
+WidthType,
+BorderStyle,
+Document,
+Paragraph,
+Packer,
+Header,
+TextRun,
+HeadingLevel,
+ImageRun,
+} from "docx";
+import { saveAs } from "file-saver";
 
 import { mapState } from 'vuex'
 
@@ -468,6 +481,15 @@ export default {
   name: "about",
   components: {
     navbar,
+    ImageRun,
+    WidthType,
+    BorderStyle,
+    Header,
+    Document,
+    Paragraph,
+    Packer,
+    TextRun,
+    saveAs,
   },
   data() {
       return {
@@ -516,7 +538,11 @@ export default {
         objetivo: '',
         deficiencias: '',
         Usuario: '',
-        Direccion: ''
+        Direccion: '',
+        //Variables Ejemplo Word
+        firstname: "Jhon",
+        lastname: "Doe",
+        message: "I just created a document using Vue.js 😲",
       }
     },
     validations:{
@@ -1058,6 +1084,47 @@ export default {
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
+      },
+      createDoc(){
+        // Create a new Document an save it in a variable
+        console.log(fs)
+        let doc = new Document({
+          sections: [{
+            children: [
+              new ImageRun({
+                data: fs.readFileSync('../assets/INFORME_html_83257bea9ebe74ecs'),
+                transformation: {
+                  width: 100,
+                  height: 100,
+                }
+              }),
+              new Paragraph({
+                text:`Hi! My name is ${this.firstname} ${this.lastname}.`,
+                heading: HeadingLevel.HEADING_2,
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: this.message,
+                    bold: true,
+                  }),
+                ],
+              }),
+            ]
+          }]
+        });
+        // Documents contain sections, you can have multiple sections per document, go here to learn more about sections
+        // This simple example will only contain one section
+        
+        // To export into a .docx file
+        this.saveDocumentToFile(doc, `vuedoc.docx`);
+      },
+      saveDocumentToFile(doc, fileName){
+        const mimeType = "application/vnd.openxmlformatsofficedocument.wordprocessingml.document";
+        Packer.toBlob(doc).then((blob) => {
+        const docblob = blob.slice(0, blob.size, mimeType);
+        saveAs(docblob, fileName);
+        });
       }
     },
     //Prepara las tablas como Datatables de JQuery
