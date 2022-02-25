@@ -433,6 +433,7 @@
                     <div class="mb-3">
                       <b-button @click="createDoc()" class="btn-success botonmostrar boton">Generar Informe</b-button>
                     </div>
+                    <div id="preview"></div>
                   </b-col>  
                 </b-row>
               </div>
@@ -456,6 +457,7 @@ import $ from 'jquery';
 import * as XLSX from 'xlsx/xlsx.mjs';
 /* load 'fs' for readFile and writeFile support */
 import * as fs from 'fs';
+import { readFile } from 'fs';
 XLSX.set_fs(fs);
 /* load the codepage support library for extended support with older formats  */
 import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
@@ -543,6 +545,7 @@ export default {
         firstname: "Jhon",
         lastname: "Doe",
         message: "I just created a document using Vue.js 😲",
+        logoJunji: null,
       }
     },
     validations:{
@@ -1087,16 +1090,18 @@ export default {
       },
       createDoc(){
         // Create a new Document an save it in a variable
-        console.log(fs)
+        const image = new ImageRun({
+            data: this.cargarJunji(),
+            transformation: {
+                width: 100,
+                height: 100,
+            },
+        });
         let doc = new Document({
           sections: [{
             children: [
-              new ImageRun({
-                data: fs.readFileSync('../assets/INFORME_html_83257bea9ebe74ecs'),
-                transformation: {
-                  width: 100,
-                  height: 100,
-                }
+              new Paragraph({
+                children: [image],
               }),
               new Paragraph({
                 text:`Hi! My name is ${this.firstname} ${this.lastname}.`,
@@ -1112,19 +1117,34 @@ export default {
               }),
             ]
           }]
-        });
-        // Documents contain sections, you can have multiple sections per document, go here to learn more about sections
-        // This simple example will only contain one section
-        
+        });  
         // To export into a .docx file
-        this.saveDocumentToFile(doc, `vuedoc.docx`);
+        this.saveDocumentToFile(doc, `vuedoc.docx`); 
       },
+      //Funcióm que permite exportar un word
       saveDocumentToFile(doc, fileName){
         const mimeType = "application/vnd.openxmlformatsofficedocument.wordprocessingml.document";
         Packer.toBlob(doc).then((blob) => {
         const docblob = blob.slice(0, blob.size, mimeType);
         saveAs(docblob, fileName);
         });
+      },
+      //Funciones para cargar datos de directorio
+      cargarJunji(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/logojunji', config)
+          .then(res => {
+            console.log(res.data)
+            console.log(res.data.data)
+            return res.data;
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar una imagen');
+          })
       }
     },
     //Prepara las tablas como Datatables de JQuery
