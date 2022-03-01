@@ -463,19 +463,15 @@ XLSX.set_fs(fs);
 import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
 XLSX.set_cptable(cpexcel);
 
-//Exportación Word
-import {
-WidthType,
-BorderStyle,
-Document,
-Paragraph,
-Packer,
-Header,
-TextRun,
-HeadingLevel,
-ImageRun,
-} from "docx";
+//Importaciones para WORD
+import Docxtemplater from "docxtemplater";
+import PizZip from "pizzip";
+import PizZipUtils from "pizzip/utils/index.js";
 import { saveAs } from "file-saver";
+
+function loadFile(url, callback) {
+    PizZipUtils.getBinaryContent(url, callback);
+}
 
 import { mapState } from 'vuex'
 
@@ -483,15 +479,6 @@ export default {
   name: "about",
   components: {
     navbar,
-    ImageRun,
-    WidthType,
-    BorderStyle,
-    Header,
-    Document,
-    Paragraph,
-    Packer,
-    TextRun,
-    saveAs,
   },
   data() {
       return {
@@ -541,11 +528,6 @@ export default {
         deficiencias: '',
         Usuario: '',
         Direccion: '',
-        //Variables Ejemplo Word
-        firstname: "Jhon",
-        lastname: "Doe",
-        message: "I just created a document using Vue.js 😲",
-        logoJunji: null,
       }
     },
     validations:{
@@ -1088,47 +1070,40 @@ export default {
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
       },
-      createDoc(){
-        // Create a new Document an save it in a variable
-        const image = new ImageRun({
-            data: this.cargarJunji(),
-            transformation: {
-                width: 100,
-                height: 100,
-            },
-        });
-        let doc = new Document({
-          sections: [{
-            children: [
-              new Paragraph({
-                children: [image],
-              }),
-              new Paragraph({
-                text:`Hi! My name is ${this.firstname} ${this.lastname}.`,
-                heading: HeadingLevel.HEADING_2,
-              }),
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: this.message,
-                    bold: true,
-                  }),
-                ],
-              }),
-            ]
-          }]
-        });  
-        // To export into a .docx file
-        this.saveDocumentToFile(doc, `vuedoc.docx`); 
-      },
-      //Funcióm que permite exportar un word
-      saveDocumentToFile(doc, fileName){
-        const mimeType = "application/vnd.openxmlformatsofficedocument.wordprocessingml.document";
-        Packer.toBlob(doc).then((blob) => {
-        const docblob = blob.slice(0, blob.size, mimeType);
-        saveAs(docblob, fileName);
-        });
-      },
+      createDoc() {
+            var tipo = this.tipoExportar
+            loadFile(
+                "http://localhost:3000/INFORME.docx",
+                function (error, content) {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                    });
+
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render({
+                        first_name: "John",
+                        tipoExportar: tipo,
+                        last_name: "Doe",
+                        phone: "0652455478",
+                        description: "New Website",
+                    });
+
+                    const out = doc.getZip().generate({
+                        type: "blob",
+                        mimeType:
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    });
+                    // Output the document using Data-URI
+                    saveAs(out, "output.docx");
+                }
+            );
+        },
+      
       //Funciones para cargar datos de directorio
       cargarJunji(){
         let config = {
