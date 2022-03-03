@@ -885,7 +885,7 @@ export default {
                 text: 'No se ha creado este nuevo tipo',
                 footer: 'Posible error del sistema'
               })
-          })
+            })
         }else{
           this.alerta('danger', 'Porfavor ingrese un nuevo tipo');
         }
