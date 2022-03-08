@@ -457,7 +457,6 @@ import $ from 'jquery';
 import * as XLSX from 'xlsx/xlsx.mjs';
 /* load 'fs' for readFile and writeFile support */
 import * as fs from 'fs';
-import { readFile } from 'fs';
 XLSX.set_fs(fs);
 /* load the codepage support library for extended support with older formats  */
 import * as cpexcel from 'xlsx/dist/cpexcel.full.mjs';
@@ -609,6 +608,7 @@ export default {
         this.mensaje.texto = texto;
         this.showAlert();
       },
+      //Función que verifica el tipo de usuario (Administrador / Normal)
       verificar(){
         if(this.usuarioDB.data[0].tipoUsuario == 0){
           this.activo = false;

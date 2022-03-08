@@ -11,13 +11,10 @@
                 <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un correo</p>
                 <input type="password" id="password" class="third" name="login" placeholder="Contraseña" v-model="$v.password.$model" :class="{'is-invalid': $v.password.$error}">
                 <p class="text-danger" v-if="!$v.password.minLength">Mínimo de 6 caracteres</p>
-                <br>
-                <input type="submit" class="fadeIn fourth" id= "inicioSesion" value="Inicio de sesión" width="70px">
+                <br>  
+                <input type="submit" class="fadeIn fourth" id="inicioSesion" value="Inicio de sesión" width="70px">
               </form>
               <!-- Remind Passowrd -->
-              <div id="formFooter">
-                <a class="underlineHover" href="#">¿Olvidaste tu contraseña?</a>
-              </div>
             </div>
     </div>
 </template>
@@ -55,7 +52,7 @@ export default {
               icon: 'error',
               title: 'Oops...',
               text: e.response.data.mensaje,
-              footer: 'Error al intentar Ingresar a su seción'
+              footer: 'Error al intentar Ingresar a su sesión'
             })
           })
       }else{
