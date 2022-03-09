@@ -1071,7 +1071,7 @@ export default {
         $('#tablaConDueño').DataTable().destroy();
       },
       createDoc() {
-            var tipo = this.tipoExportar
+            var exportar = {tipo: this.tipoExportar, clasificacion: this.clasificacionExportar, ubicacion: this.ubicacionExportar, encargado: this.duenoExportar, introduccion: this.Introduccion, objetivo: this.objetivo, deficiencias: this.deficiencias, usuario: this.Usuario, direccion: this.Direccion}
             loadFile(
                 "http://localhost:3000/INFORME.docx",
                 function (error, content) {
@@ -1086,11 +1086,15 @@ export default {
 
                     // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
                     doc.render({
-                        first_name: "John",
-                        tipoExportar: tipo,
-                        last_name: "Doe",
-                        phone: "0652455478",
-                        description: "New Website",
+                        tipoExportar: exportar.tipo,
+                        clasificacionExportar: exportar.clasificacion,
+                        ubicacionExportar: exportar.ubicacion,
+                        duenoExportar: exportar.encargado,
+                        Introduccion: exportar.introduccion,
+                        Objetivo: exportar.objetivo,
+                        deficiencias: exportar.deficiencias,
+                        Usuario: exportar.usuario,
+                        Direccion: exportar.direccion
                     });
 
                     const out = doc.getZip().generate({
@@ -1102,25 +1106,7 @@ export default {
                     saveAs(out, "output.docx");
                 }
             );
-        },
-      
-      //Funciones para cargar datos de directorio
-      cargarJunji(){
-        let config = {
-          headers: {
-            token: this.token
-          }
         }
-        this.axios.get('api/logojunji', config)
-          .then(res => {
-            console.log(res.data)
-            console.log(res.data.data)
-            return res.data;
-          })
-          .catch(e => {
-            this.alerta('danger', 'No se han podido cargar una imagen');
-          })
-      }
     },
     //Prepara las tablas como Datatables de JQuery
     async mounted(){
