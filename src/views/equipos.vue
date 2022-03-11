@@ -149,7 +149,7 @@
                     <b-button @click="ActHistorial(i.corrEquipo, false)" class="btn-sm" style="border-color: white;">Historial</b-button>
                   </td>
                   <td>
-                    <b-button @click="Export2Doc('exportContent', 'Informe' + i.codEquipo)" class="btn-success btn-sm" style="border-color: white;">Exportar</b-button>
+                    <b-button @click="Export2Doc(i.codEquipo, i.modelo, i.tipoEquipo)" class="btn-success btn-sm" style="border-color: white;">Exportar</b-button>
                   </td>
                 </tr>
               </tbody>
@@ -348,6 +348,32 @@
             <!-- Vista de Exportación -->
             <div class="card" style="border-color: black;" v-if="pestaña === 'word'">
                 <div class="card-body">
+                  <b-row>
+                    <b-col cols="12" md="4">
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Redactado por</label>
+                        <select class="form-control" v-model="$v.redactado.$model">
+                          <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                        </select>
+                      </div>
+                    </b-col>
+                    <b-col cols="12" md="4">
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Revisado por</label>
+                        <select class="form-control" v-model="$v.revisado.$model">
+                          <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                        </select>
+                      </div>
+                    </b-col>
+                    <b-col cols="12" md="4">
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Aprobado por</label>
+                        <select class="form-control" v-model="$v.aprobado.$model">
+                          <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                        </select>
+                      </div>
+                    </b-col>
+                 </b-row>
                  <b-row>
                   <b-col cols="12" md="6">
                     <div class="mb-3">
@@ -375,8 +401,9 @@
                   <b-col cols="12" md="6">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Encargado del Informe</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.duenoExportar.$model">
-                      <p class="text-danger" v-if="$v.duenoExportar.$error" >Es necesario ingresar al usuario del equipo</p>
+                      <select class="form-control" v-model="$v.duenoExportar.$model">
+                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                      </select>
                     </div>
                   </b-col>
                 </b-row>
@@ -385,7 +412,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Introducción</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Introduccion.$model"></textarea>
-                      <p class="text-danger" v-if="$v.Introduccion.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                      <p class="text-danger" v-if="$v.Introduccion.$error" >Es necesario ingresar una introduccion de mínimo 1000 caracteres</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -403,23 +430,47 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Deficiencias generales observadas</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.deficiencias.$model"></textarea>
-                      <p class="text-danger" v-if="$v.deficiencias.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                      <p class="text-danger" v-if="$v.deficiencias.$error" >Es necesario ingresar una introduccion de mínimo 1000 caracteres</p>
                     </div>
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Usuario del Equipo</label>
-                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Usuario.$model">
-                      <p class="text-danger" v-if="$v.Usuario.$error" >Es necesario indicar al usuario</p>
+                      <select class="form-control" v-model="$v.Usuario.$model">
+                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                      </select>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Dirección del Usuario</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Direccion.$model">
                       <p class="text-danger" v-if="$v.Direccion.$error">Es necesario indicar la dirección del usuario</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="3">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Ubicación Geográfica</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.ubicacion.$model">
+                      <p class="text-danger" v-if="$v.ubicacion.$error">Es necesario indicar la ubicación geografica</p>
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="3">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Estado</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.estadoExportar.$model">
+                      <p class="text-danger" v-if="$v.estadoExportar.$error">Es necesario indicar un estado</p>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12" md="12">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Observaciones</label>
+                      <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.observaciones.$model"></textarea>
+                      <p class="text-danger" v-if="$v.observaciones.$error" >Es necesario ingresar una observación de mínimo 200 caracteres</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -527,6 +578,14 @@ export default {
         deficiencias: '',
         Usuario: '',
         Direccion: '',
+        nomEquipoExportar: '',
+        codEquipoExportar: '',
+        redactado: '',
+        revisado: '',
+        aprobado: '',
+        observaciones: '',
+        estadoExportar: '',
+        ubicacion: ''
       }
     },
     validations:{
@@ -548,11 +607,19 @@ export default {
       clasificacionExportar: {required},
       ubicacionExportar: {required},
       duenoExportar: {required},
-      Introduccion: {required, minLength: minLength(500)},
+      Introduccion: {required, minLength: minLength(1000)},
       objetivo: {required, minLength: minLength(500)},
-      deficiencias: {required, minLength: minLength(500)},
+      deficiencias: {required, minLength: minLength(1000)},
       Usuario: {required},
       Direccion: {required},
+      nomEquipoExportar: {required},
+      codEquipoExportar: {required},
+      redactado: {required},
+      revisado: {required},
+      aprobado: {required},
+      observaciones: {required, minLength: minLength(200)},
+      estadoExportar: {required},
+      ubicacion: {required}
     },
     computed: {
       ...mapState(['token', 'usuarioDB'])
@@ -1006,6 +1073,11 @@ export default {
           .then(res => {
             this.dueños = res.data;
             this.dueño = res.data[0].nombre
+            this.revisado = res.data[0].nombre
+            this.redactado = res.data[0].nombre
+            this.aprobado = res.data[0].nombre
+            this.Usuario = res.data[0].nombre
+            this.duenoExportar = res.data[0].nombre
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar los nombres de los Funcionarios');
@@ -1063,15 +1135,20 @@ export default {
           this.tipoMostrar = 'no'
         }
       },
-      Export2Doc(){
+      Export2Doc(codigoEquipo, modelo, tipo){
         this.pestaña = 'word'
         this.botones = 'no'
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
+        this.codEquipoExportar = codigoEquipo
+        this.nomEquipoExportar = modelo
+        this.tipoExportar = tipo
       },
       createDoc() {
+            var dt = this.convertDateMysql(new Date())
             var exportar = {tipo: this.tipoExportar, clasificacion: this.clasificacionExportar, ubicacion: this.ubicacionExportar, encargado: this.duenoExportar, introduccion: this.Introduccion, objetivo: this.objetivo, deficiencias: this.deficiencias, usuario: this.Usuario, direccion: this.Direccion}
+            var datosUsuarioEqp = {nomEquipo: this.nomEquipoExportar, codigo: this.codEquipoExportar, redactado: this.redactado, revisado: this.revisado, aprobado: this.aprobado, observaciones: this.observaciones, estadoExportar: this.estadoExportar, ubicacion: this.ubicacion}
             loadFile(
                 "http://localhost:3000/INFORME.docx",
                 function (error, content) {
@@ -1094,9 +1171,17 @@ export default {
                         Objetivo: exportar.objetivo,
                         deficiencias: exportar.deficiencias,
                         Usuario: exportar.usuario,
-                        Direccion: exportar.direccion
+                        Direccion: exportar.direccion,
+                        nomEquipo: datosUsuarioEqp.nomEquipo,
+                        codigo: datosUsuarioEqp.codigo,
+                        redactado: datosUsuarioEqp.redactado,
+                        revisado: datosUsuarioEqp.revisado,
+                        aprobado: datosUsuarioEqp.aprobado,
+                        observaciones: datosUsuarioEqp.observaciones,
+                        estadoExportar: datosUsuarioEqp.estadoExportar,
+                        ubicacion: datosUsuarioEqp.ubicacion,
+                        fecha: dt
                     });
-
                     const out = doc.getZip().generate({
                         type: "blob",
                         mimeType:
