@@ -14,7 +14,9 @@
                 <br>  
                 <input type="submit" class="fadeIn fourth" id="inicioSesion" value="Inicio de sesión" width="70px">
               </form>
-              <!-- Remind Passowrd -->
+              <div id="formFooter">
+                <p class="underlineHover" href="#">Seleccione "Inicio de Sesión" con sus datos</p>
+              </div>
             </div>
     </div>
 </template>

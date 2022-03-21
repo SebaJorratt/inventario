@@ -29,7 +29,6 @@
                     <tr>
                       <th scope="col">Codigo Dependencia</th>
                       <th scope="col">Nombre</th>
-                      <th scope="col">Encargado</th>
                       <th scope="col">Region</th>
                       <th scope="col">Providencia</th>
                       <th scope="col">Comuna</th>
@@ -42,7 +41,6 @@
                     <tr v-for="i in dependencias" :key="i.codigo">
                       <td scope="row">{{i.codJardin}}</td>
                       <td>{{i.nomJardin}}</td>
-                      <td scope="row">{{i.nombre}}</td>
                       <td>{{i.region}}</td>
                       <td>{{i.provincia}}</td>
                       <td>{{i.comuna}}</td>
@@ -66,19 +64,11 @@
           <div class="card" v-if="pestaña === 'agregar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
-                   <b-col cols="12" md="6">
+                   <b-col cols="12" md="12">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo perteneciente al Jardin</label>
                       <input type="text" class="form-control" id="codJardinAgrega" aria-describedby="emailHelp" v-model="$v.codigo.$model">
                       <p class="text-danger" v-if="$v.codigo.$error">Es necesario ingresar un codigo</p>
-                    </div>
-                  </b-col>
-                  <b-col cols="12" md="6">
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
-                      <select class="form-control" v-model="$v.dueño.$model">
-                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
-                      </select>
                     </div>
                   </b-col>
                  </b-row>
@@ -132,19 +122,11 @@
           <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="12">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
+                      <label for="exampleInputEmail1" class="form-label">Nombre del Jardin/Dependencia</label>
                       <input type="text" class="form-control" id="nomJardinEdita" aria-describedby="emailHelp" v-model="$v.nomJardin.$model">
                       <p class="text-danger" v-if="$v.nomJardin.$error">Es necesario ingresar un nombre</p>
-                    </div>
-                  </b-col>
-                  <b-col cols="12" md="6">
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
-                      <select class="form-control" v-model="$v.dueño.$model">
-                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
-                      </select>
                     </div>
                   </b-col>
                   </b-row>
@@ -306,8 +288,6 @@ export default {
         pestaña: 'dependencias',
         codigo: '',
         nomJardinAgrega: '',
-        dueño: '',
-        dueños: [],
         regionAgrega: '',
         regiones: [],
         comunaAgrega: '',
@@ -331,7 +311,6 @@ export default {
       //Validaciones de los input
       codigo:{required},
       nomJardinAgrega:{required},
-      dueño: {required},
       regionAgrega:{required},
       comunaAgrega:{required},
       provinciaAgrega:{required},
@@ -347,7 +326,6 @@ export default {
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarDependencias();
       this.obtenerRegiones(true);
-      this.listarDueños();
       this.verificar();
     },
     methods: { 
@@ -510,22 +488,6 @@ export default {
             this.alerta('danger', 'No se han podido cargar las comunas');
           })
       },
-      //Carga todos los funcionarios de la base de datos
-      listarDueños(){
-        let config = {
-          headers: {
-            token: this.token
-          }
-        }
-        this.axios.get('api/funcionarios', config)
-          .then(res => {
-            this.dueños = res.data;
-            this.dueño = res.data[0].nombre
-          })
-          .catch(e => {
-            this.alerta('danger', 'No se han podido cargar los nombres de los Funcionarios');
-        })
-      },
       //Función que determina la vista de edición de una dependencia
       Acteditar(codigo){
         this.pestaña = 'editar'
@@ -565,7 +527,7 @@ export default {
         }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.nomJardinAgrega.$invalid){
-          this.axios.post('api/agregaDependencia', {codJardin: this.codigo, nomJardin: this.nomJardinAgrega, nombre: this.dueño, region: this.regionAgrega, comuna: this.comunaAgrega, provincia: this.provinciaAgrega}, config)
+          this.axios.post('api/agregaDependencia', {codJardin: this.codigo, nomJardin: this.nomJardinAgrega, region: this.regionAgrega, comuna: this.comunaAgrega, provincia: this.provinciaAgrega}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -613,7 +575,6 @@ export default {
         await this.axios.get(`api/dependencia/${this.codigoEditar}`, config)
           .then(res => {
             this.nomJardin = res.data[0].nomJardin;
-            this.dueño = res.data[0].nombre;
             this.region = res.data[0].region;
             this.obtenerProvincias(false,res.data[0].provincia,res.data[0].comuna);
           })
@@ -636,7 +597,7 @@ export default {
         }
         this.$v.$touch()
         if(!this.$v.nomJardin.$invalid){
-          this.axios.put(`api/actualizaDependencia/${this.codigoEditar}`, {codJardin: this.codigo, nomJardin: this.nomJardin, nombre: this.dueño, region: this.region, comuna: this.comuna, provincia: this.provincia}, config)
+          this.axios.put(`api/actualizaDependencia/${this.codigoEditar}`, {codJardin: this.codigo, nomJardin: this.nomJardin, region: this.region, comuna: this.comuna, provincia: this.provincia}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({

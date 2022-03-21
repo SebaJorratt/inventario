@@ -73,37 +73,51 @@
                   </b-col>
                  </b-row>
                  <b-row>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
                       <input type="text" class="form-control" id="codFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.codigoFuncionarioAgregar.$model">
                       <p class="text-danger" v-if="$v.codigoFuncionarioAgregar.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
                       <input type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.nomFuncionarioAgregar.$model">
                       <p class="text-danger" v-if="$v.nomFuncionarioAgregar.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
-                  </b-row>
+                  <b-col cols="12" md="4">
+                    <label for="exampleInputEmail1" class="form-label">Dependencia</label>
+                    <select class="form-control" v-model="dependenciaAgregar">
+                      <option v-for="i in dependencias" :key="i.nomJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
+                    </select>
+                  </b-col>
+                </b-row>
                   <b-row>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
                         <input type="email" class="form-control" id="correoAgrega" aria-describedby="emailHelp" v-model="$v.correoAgregar.$model">
                         <p class="text-danger" v-if="$v.correoAgregar.$error">Por favor ingrese un email</p>
                       </div>
                     </b-col>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
                         <input type="text" class="form-control" id="rutAgrega" aria-describedby="emailHelp" v-model="$v.rutAgregar.$model">
                         <p class="text-danger" v-if="$v.rutAgregar.$error">Es necesario ingresar un rut</p>
                       </div>
                     </b-col>
-                </b-row>
+                    <b-col cols="12" md="4">
+                      <label for="exampleInputEmail1" class="form-label">Encargado de Dependencia</label>
+                      <select class="form-control" v-model="encargadoAgregar">
+                        <option disabled value="">Tipo de funcionario</option>
+                        <option value="1">Encargado</option>
+                        <option value="0">Normal</option>
+                      </select>
+                    </b-col>
+                  </b-row>
                 <br>
                 <b-row>
                   <b-col cols="12" md="6">
@@ -119,35 +133,49 @@
           <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
                       <input type="text" class="form-control" id="codFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.codigoFuncionario.$model">
                       <p class="text-danger" v-if="$v.codigoFuncionario.$error">Es necesario ingresar un codigo</p>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="6">
+                  <b-col cols="12" md="4">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
                       <input type="text" class="form-control" id="nomFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.nomFuncionario.$model">
                       <p class="text-danger" v-if="$v.nomFuncionario.$error">Es necesario ingresar un nombre</p>
                     </div>
                   </b-col>
-                  </b-row>
+                  <b-col cols="12" md="4">
+                    <label for="exampleInputEmail1" class="form-label">Dependencia</label>
+                    <select class="form-control" v-model="dependenciaEditar">
+                      <option v-for="i in dependencias" :key="i.nomJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
+                    </select>
+                  </b-col>
+                </b-row>
                   <b-row>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Correo del Funcionario</label>
                         <input type="email" class="form-control" id="correoEdita" aria-describedby="emailHelp" v-model="$v.correo.$model">
                         <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un email</p>
                       </div>
                     </b-col>
-                    <b-col cols="12" md="6">
+                    <b-col cols="12" md="4">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Rut del Funcionario</label>
                         <input type="text" class="form-control" id="rutEdita" aria-describedby="emailHelp" v-model="$v.rut.$model">
                         <p class="text-danger" v-if="$v.rut.$error">Es necesario ingresar un rut</p>
                       </div>
+                    </b-col>
+                    <b-col cols="12" md="4">
+                      <label for="exampleInputEmail1" class="form-label">Encargado de Dependencia</label>
+                      <select class="form-control" v-model="encargadoEditar">
+                        <option disabled value="">Tipo de funcionario</option>
+                        <option value="1">Encargado</option>
+                        <option value="0">Normal</option>
+                      </select>
                     </b-col>
                 </b-row>
                 <br>
@@ -280,6 +308,7 @@ export default {
         equiposAct: [],
         historial: [],
         funcionarios: [],
+        dependencias: [],
         //Pestaña que indica la vista actual
         pestaña: 'funcionarios',
         //Variables para agregar un nuevo funcionario con v-model
@@ -288,12 +317,16 @@ export default {
         nomFuncionarioAgregar: '',
         correoAgregar: '',
         rutAgregar: '',
+        dependenciaAgregar: '',
+        encargadoAgregar: 1,
         //Variables para editar un funcionario con v-model
         codigoEditar: '',
         codigoFuncionario: '',
         nomFuncionario: '',
         correo: '',
         rut: '',
+        dependenciaEditar: '',
+        encargadoEditar: 1,
         //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
@@ -319,6 +352,7 @@ export default {
     created(){
       //Iniciamos las funciones que se encargan de cargar los datos apenas se inicie la ruta
       this.listarFuncionarios();
+      this.listarDependencias();
       this.verificar();
     },
     methods: {
@@ -367,6 +401,22 @@ export default {
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar a los funcionarios');
+          })
+      },
+      //Función que obtiene los datos de las dependencias
+      listarDependencias(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get('api/dependenciasTabla', config)
+          .then(res => {
+            this.dependencias = res.data;
+            this.dependenciaAgregar = res.data[0].nomJardin
+          })
+          .catch(e => {
+            this.alerta('danger', 'No se han podido cargar a las dependencias');
           })
       },
       //Muestra el historial de equipos del funcionario
@@ -437,9 +487,11 @@ export default {
             token: this.token
           }
         }
+        const index = this.dependencias.findIndex(item => item.nomJardin == this.dependenciaAgregar);
+        var codJardinAct = this.dependencias[index].codJardin
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.codigoFuncionarioAgregar.$invalid && !this.$v.nomFuncionarioAgregar.$invalid && !this.$v.correoAgregar.$invalid && !this.$v.rutAgregar.$invalid){
-          this.axios.post('api/agregaFuncionario', {codigo: this.codigo, nombre: this.nomFuncionarioAgregar, codFuncionario: this.codigoFuncionarioAgregar, correo: this.correoAgregar, rut: this.rutAgregar}, config)
+          this.axios.post('api/agregaFuncionario', {codigo: this.codigo, nombre: this.nomFuncionarioAgregar, codFuncionario: this.codigoFuncionarioAgregar, correo: this.correoAgregar, rut: this.rutAgregar, codJardin: codJardinAct, encargado: this.encargadoAgregar}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({
@@ -490,6 +542,9 @@ export default {
             this.nomFuncionario = res.data[0].nombre;
             this.correo = res.data[0].correo;
             this.rut = res.data[0].rut;
+            this.encargadoEditar = res.data[0].encargado
+            const index = this.dependencias.findIndex(item => item.codJardin == res.data[0].codJardin);
+            this.dependenciaEditar = this.dependencias[index].nomJardin
           })
           .catch(e => {
             Swal.fire({
@@ -510,7 +565,9 @@ export default {
         }
         this.$v.$touch()
         if(!this.$v.codigoFuncionario.$invalid && !this.$v.nomFuncionario.$invalid && !this.$v.correo.$invalid && !this.$v.rut.$invalid){
-          this.axios.put(`api/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut}, config)
+          const index = this.dependencias.findIndex(item => item.nomJardin == this.dependenciaEditar);
+          var codJardinAct = this.dependencias[index].codJardin
+          this.axios.put(`api/actualizaFuncionario/${this.codigoEditar}`, {codigo: this.codigo, nombre: this.nomFuncionario, codFuncionario: this.codigoFuncionario, correo: this.correo, rut: this.rut, codJardin: codJardinAct, encargado: this.encargadoEditar}, config)
             .then(res => {
               if(res.data.sqlMessage){
                 Swal.fire({

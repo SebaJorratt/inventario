@@ -412,7 +412,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Introducción</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Introduccion.$model"></textarea>
-                      <p class="text-danger" v-if="$v.Introduccion.$error" >Es necesario ingresar una introduccion de mínimo 1000 caracteres</p>
+                      <p class="text-danger" v-if="$v.Introduccion.$error" >El máximo de caracteres para este parrafo es 1000</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -421,7 +421,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Objetivo</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.objetivo.$model"></textarea>
-                      <p class="text-danger" v-if="$v.objetivo.$error" >Es necesario ingresar una introduccion de mínimo 500 caracteres</p>
+                      <p class="text-danger" v-if="$v.objetivo.$error" >El máximo de caracteres para este parrafo es 500</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -430,7 +430,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Deficiencias generales observadas</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.deficiencias.$model"></textarea>
-                      <p class="text-danger" v-if="$v.deficiencias.$error" >Es necesario ingresar una introduccion de mínimo 1000 caracteres</p>
+                      <p class="text-danger" v-if="$v.deficiencias.$error" >El máximo de caracteres para este parrafo es 1000</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -445,14 +445,14 @@
                   </b-col>
                   <b-col cols="12" md="3">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Dirección del Usuario</label>
+                      <label for="exampleInputEmail1" class="form-label">Dirección del Bien</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.Direccion.$model">
                       <p class="text-danger" v-if="$v.Direccion.$error">Es necesario indicar la dirección del usuario</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="3">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Ubicación Geográfica</label>
+                      <label for="exampleInputEmail1" class="form-label">Ubicación Geográfica / Comuna</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.ubicacion.$model">
                       <p class="text-danger" v-if="$v.ubicacion.$error">Es necesario indicar la ubicación geografica</p>
                     </div>
@@ -470,7 +470,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Observaciones</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.observaciones.$model"></textarea>
-                      <p class="text-danger" v-if="$v.observaciones.$error" >Es necesario ingresar una observación de mínimo 200 caracteres</p>
+                      <p class="text-danger" v-if="$v.observaciones.$error" >El máximo de caracteres para este parrafo es 200</p>
                     </div>
                   </b-col>
                 </b-row>
@@ -497,7 +497,7 @@
 <script>
 import navbar from "../components/navbar.vue";
 
-import { required, minLength} from "vuelidate/lib/validators";
+import { required, maxLength} from "vuelidate/lib/validators";
 import 'jquery/dist/jquery.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
@@ -607,9 +607,9 @@ export default {
       clasificacionExportar: {required},
       ubicacionExportar: {required},
       duenoExportar: {required},
-      Introduccion: {required, minLength: minLength(1000)},
-      objetivo: {required, minLength: minLength(500)},
-      deficiencias: {required, minLength: minLength(1000)},
+      Introduccion: {required, maxLength: maxLength(1000)},
+      objetivo: {required, maxLength: maxLength(500)},
+      deficiencias: {required, maxLength: maxLength(1000)},
       Usuario: {required},
       Direccion: {required},
       nomEquipoExportar: {required},
@@ -617,7 +617,7 @@ export default {
       redactado: {required},
       revisado: {required},
       aprobado: {required},
-      observaciones: {required, minLength: minLength(200)},
+      observaciones: {required, maxLength: maxLength(200)},
       estadoExportar: {required},
       ubicacion: {required}
     },
@@ -1188,7 +1188,7 @@ export default {
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     });
                     // Output the document using Data-URI
-                    saveAs(out, "output.docx");
+                    saveAs(out, "InformeBaja" + this.codEquipoExportar + ".docx");
                 }
             );
         }
