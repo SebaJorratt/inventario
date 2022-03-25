@@ -47,6 +47,7 @@ export default {
         this.axios.post('/auth/login', {correo: this.correo, password: this.password})
           .then(res => {
             const token = res.data.token;
+            console.log(token)
             this.guardarUsuario(token);
           })
           .catch(e => {

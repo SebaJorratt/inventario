@@ -155,7 +155,7 @@ export default {
                   icon: 'error',
                   title: 'Oops...',
                   text: e.response.data.mensaje,
-                  footer: 'Error al intentar Ingresar a su seción'
+                  footer: 'Error al intentar Modificar sus datos'
                 })
               })
           }else{
@@ -174,7 +174,7 @@ export default {
                       icon: 'error',
                       title: 'Oops...',
                       text: e.response.data.mensaje,
-                      footer: 'Error al intentar Ingresar a su seción'
+                      footer: 'Error al intentar Modificar sus datos'
                     })
                   })
               }else{

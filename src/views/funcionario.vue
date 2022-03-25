@@ -84,7 +84,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
                       <input type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.nomFuncionarioAgregar.$model">
-                      <p class="text-danger" v-if="$v.nomFuncionarioAgregar.$error">Es necesario ingresar un nombre</p>
+                      <p class="text-danger" v-if="$v.nomFuncionarioAgregar.$error">Es necesario ingresar un nombre mínimos 10 caracteres</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
@@ -144,7 +144,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Funcionario</label>
                       <input type="text" class="form-control" id="nomFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.nomFuncionario.$model">
-                      <p class="text-danger" v-if="$v.nomFuncionario.$error">Es necesario ingresar un nombre</p>
+                      <p class="text-danger" v-if="$v.nomFuncionario.$error">Es necesario ingresar un nombre mínimos 10 caracteres</p>
                     </div>
                   </b-col>
                   <b-col cols="12" md="4">
@@ -278,7 +278,7 @@
 
 <script>
 import navbar from "../components/navbar.vue";
-import { required, email } from "vuelidate/lib/validators";
+import { required, email, minLength } from "vuelidate/lib/validators";
 import 'jquery/dist/jquery.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "datatables.net-dt/js/dataTables.dataTables";
@@ -338,11 +338,11 @@ export default {
       //Validaciones de los input
       codigo:{required},
       codigoFuncionarioAgregar:{required},
-      nomFuncionarioAgregar:{required},
+      nomFuncionarioAgregar:{required, minLength: minLength(10)},
       correoAgregar:{required, email},
       rutAgregar:{required},
       codigoFuncionario:{required},
-      nomFuncionario:{required},
+      nomFuncionario:{required, minLength: minLength(10)},
       correo:{required, email},
       rut:{required}
     },

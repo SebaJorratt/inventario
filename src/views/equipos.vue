@@ -41,14 +41,13 @@
             <table class="table table-striped table-dark table-responsive-lg table-responsive-md" id="tablaConDueño" v-if="pestaña === 'equiposact'">
               <thead>
                 <tr>
-                  <th scope="col">Id</th>
                   <th scope="col">Tipo</th>
                   <th scope="col">N° Serie</th>
                   <th scope="col">Codigo</th>
                   <th scope="col">Estado</th>
                   <th scope="col">Jardin</th>
                   <th scope="col">Usuario</th>
-                  <th scope="col">Zona</th>
+                  <th scope="col">Zona Equipo</th>
                   <th scope="col">Fecha Asignación</th>
                   <th scope="col">Mostrar Equipo</th>
                   <th scope="col">Historial</th>
@@ -57,14 +56,13 @@
               </thead>
               <tbody>
                 <tr v-for="i in equiposAct" :key="i.codHistorial">
-                  <td scope="row">{{i.codHistorial}}</td>
-                  <td>{{i.tipoEquipo}}</td>
+                  <td scope="row">{{i.tipoEquipo}}</td>
                   <td>{{i.serie}}</td>
                   <td>{{i.codEquipo}}</td>
                   <td>{{i.estado}}</td>
                   <td>{{i.nomJardin}}</td>
                   <td>{{i.nombre}}</td>
-                  <td>{{i.zona}}</td>
+                  <td><input @change="CambiaZona(i.codHistorial, i.zona)" class="form-control" v-model="i.zona"></td>
                   <td>{{i.fechaInicio}}</td>
                   <td>
                     <b-button @click="Acteditar(i.codHistorial, true)" class="btn-warning btn-sm" style="border-color: white;">Mostrar Mas</b-button>
@@ -180,7 +178,7 @@
                       <label for="exampleInputEmail1" class="form-label">Tipo de equipo</label> 
                       <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'si'" style="color: #35ACF1;" class="form-label">&nbsp; (Crear Nuevo Tipo?)</label>
                       <label @click="CambioTipo()" for="exampleInputEmail1" v-if="tipoMostrar === 'no'" style="color: #35ACF1;" class="form-label">&nbsp; (Revisar ya existentes)</label>
-                      <select class="form-control" v-model="$v.tipo.$model" v-if="tipoMostrar === 'si'">
+                      <select @change="actCodTipo()" class="form-control" v-model="$v.tipo.$model" v-if="tipoMostrar === 'si'">
                         <option v-for="i in tipos" :key="i.tipoEquipo">{{i.tipoEquipo}}</option>
                       </select>
                       <input type="text" class="form-control" id="tiponewEdita" aria-describedby="emailHelp" v-if="tipoMostrar === 'no'" v-model="$v.tipoNew.$model">
@@ -231,6 +229,69 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Condicion Equipo</label>
                       <textarea type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.condicion.$model"></textarea>
+                    </div>
+                  </b-col>
+                </b-row>
+                <b-row v-if="(codTipo > 0 && codTipo < 6) || (codTipo > 6 && codTipo < 14) || (codTipo > 15 && codTipo < 18) || (codTipo == 21) || (codTipo > 24 && codTipo < 27)">
+                  <b-col cols="12" md="6" v-if="codTipo == 2 || (codTipo > 9 && codTipo < 13) || codTipo == 17 || codTipo == 21">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Memoria RAM Gb</label>
+                      <input @change="controlInputs()" type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="ram">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 25">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">VA(VOLT AMPERES)</label>
+                      <input type="number" @change="controlInputs()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="va">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 13">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Lumenes Proyector</label>
+                      <input type="number" @change="controlInputs()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="lumenes">
+                    </div>
+                  </b-col>
+                  
+                  <b-col cols="12" md="6" v-if="codTipo == 4 || codTipo == 7 || codTipo == 16">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">IMEI del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="imei">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 1 || codTipo == 3">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">MAC del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="mac">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 4 || codTipo == 7 || codTipo == 16">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Compañia del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="compañia">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 2 || (codTipo > 9 && codTipo < 13) || codTipo == 17 || codTipo == 21">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Procesador del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="procesador">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 5 || codTipo == 9 || codTipo == 21">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Capacidad Equipo</label>
+                      <input type="number" @change="controlInputs()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="capacidad">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 2 || (codTipo > 9 && codTipo < 13) || codTipo == 17">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Disco Duro del Equipo</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="disco">
+                    </div>
+                  </b-col>
+                  <b-col cols="12" md="6" v-if="codTipo == 3 || codTipo == 2 || codTipo == 8 || (codTipo > 9 && codTipo < 13) || codTipo == 17 || codTipo == 21 || codTipo == 27">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Pulgadas Equipo</label>
+                      <input type="number" @change="controlInputs()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="pulgadas">
                     </div>
                   </b-col>
                 </b-row>
@@ -524,6 +585,7 @@ function loadFile(url, callback) {
 }
 
 import { mapState } from 'vuex'
+import { isNull } from 'util';
 
 export default {
   name: "about",
@@ -544,6 +606,7 @@ export default {
         botones: 'si',
         selected: '',
         //Datos de editar
+        corrEqp: 0,
         corr: '',
         codigo: '',
         modelo: '',
@@ -556,6 +619,20 @@ export default {
         marcas: [],
         estado: '',
         condicion: '',
+        //CARACTERISTICAS ESPECIFICAS
+        codTipo: 0,
+        codOriginal: 0,
+        mac: '',
+        ram: 0,
+        pulgadas: 0,
+        imei: '',
+        capacidad: 0,
+        lumenes: 0,
+        va: 0,
+        procesador: '',
+        compañia: '',
+        disco: '',
+        //Enviar
         numero: '',
         zona: '',
         nombre: '',
@@ -634,6 +711,24 @@ export default {
       this.verificar();
     },
     methods: {
+      //Controlador de inputs numericos
+      controlInputs(){
+        if(this.ram < 0){
+          this.ram = 0;
+        }
+        if(this.pulgadas < 0){
+          this.pulgadas = 0
+        }
+        if(this.capacidad < 0){
+          this.capacidad = 0
+        }
+        if(this.lumenes < 0){
+          this.lumenes = 0;
+        }
+        if(this.va < 0){
+          this.va = 0;
+        }
+      },
       exportar(num) {
         let data = [];
         var filename = "planilla";
@@ -681,6 +776,25 @@ export default {
           this.activo = false;
         }
       },
+      //Al momento de cargar la tabla y modificar la zona se guarda en la base de datos
+      CambiaZona(id, zona){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.put(`api/actualizaZona/${id}`, {zona: zona}, config)
+          .then(res => {
+            this.alerta('success', 'Zona modificada correctamente')
+          })
+          .catch(e => {
+            var mensaje = 'Posible error del sistema';
+            if(e.response.data.mensaje){
+              mensaje = e.response.data.mensaje;
+            }
+            this.alerta('danger', 'La zona no se ha logrado modificar en el sistema')
+          })
+      },
       //Activamos la vista de editar
       Acteditar(id, activo){
         this.pestaña = 'editar'
@@ -691,12 +805,12 @@ export default {
         //Obtenemos el correlativo del equipo, si estamos en la vista de Equipos con dueño (activo=true) tendremos que buscarlo en el arreglo paralelo por la posición
         if(activo){
           const index = this.equiposAct.findIndex(item => item.codHistorial == id);
-          var corrEqp = this.corrEquipos[index]
+          this.corrEqp = this.corrEquipos[index]
         }else{
-          var corrEqp = id;
+          this.corrEqp = id;
         }
         //Llamamos a la función que nos permite cargar los datos del equipo a editar
-        this.obtenerEqpEditar(corrEqp)
+        this.obtenerEqpEditar(this.corrEqp)
       },
       //Activamos la vista de historial
       ActHistorial(id, activo){
@@ -731,6 +845,25 @@ export default {
           .catch(e => {
             this.alerta('danger', 'No se ha podido cargar el historial');
         })
+      },
+      //Al cambiar un tipo se actualiza su codigo
+      actCodTipo(){
+        const index = this.tipos.findIndex(item => item.tipoEquipo == this.tipo);
+        this.codTipo = this.tipos[index].codTipo
+        if(this.codOriginal === this.codTipo){
+          this.obtenerEqpEditar(this.corrEqp)
+        }else{
+          this.mac = ''
+          this.ram = 0
+          this.pulgadas = 0
+          this.imei = ''
+          this.capacidad = 0
+          this.lumenes = 0
+          this.va = 0
+          this.procesador = ''
+          this.compañia = ''
+          this.disco = ''
+        }
       },
       //Función que obtiene todos los tipos
       obtenerTipos(){
@@ -775,10 +908,22 @@ export default {
             this.codigo = res.data[0].codEquipo;
             this.modelo = res.data[0].modelo;
             this.tipo = res.data[0].tipoEquipo;
+            this.codTipo = res.data[0].codTipo;
+            this.codOriginal = res.data[0].codTipo;
             this.serie = res.data[0].serie;
             this.marca = res.data[0].nomMarca;
             this.estado = res.data[0].estado;
             this.condicion = res.data[0].condicion;
+            this.mac = res.data[0].MAC;
+            this.ram = res.data[0].RAM;
+            this.pulgadas = res.data[0].pulgadas;
+            this.imei = res.data[0].IMEI;
+            this.capacidad = res.data[0].capacidad;
+            this.lumenes = res.data[0].lumenes;
+            this.va = res.data[0].VA;
+            this.procesador = res.data[0].procesador;
+            this.compañia = res.data[0].compañia;
+            this.disco = res.data[0].discoDuro;
           })
           .catch(e => {
             Swal.fire({
@@ -997,8 +1142,38 @@ export default {
           this.alerta('danger', 'Porfavor ingrese un nombre para la marca');
         }
       },
+      //Función que permite transformar los datos a NULL según el tipo de equipo al agregar uno nuevo
+      transformarNull(){
+        if(this.codTipo !== 1 && this.codTipo !== 3){
+          this.mac = null
+        }
+        if(this.codTipo !== 2 && this.codTipo !== 10 && this.codTipo !== 11 && this.codTipo !== 12 && this.codTipo !== 17 && this.codTipo !== 21){
+          this.ram = null
+          this.procesador = null
+        }
+        if(this.codTipo !== 2 && this.codTipo !== 10 && this.codTipo !== 11 && this.codTipo !== 12 && this.codTipo !== 17 && this.codTipo !== 21 && this.codTipo !== 3 && this.codTipo !== 8 && this.codTipo !== 27){
+          this.pulgadas = null
+        }
+        if(this.codTipo !== 4 && this.codTipo !== 7 && this.codTipo !== 16){
+          this.imei = null
+          this.compañia = null
+        }
+        if(this.codTipo == 5 && this.codTipo == 9 && this.codTipo == 21){
+          this.capacidad = null
+        }
+        if(this.codTipo !== 2 && this.codTipo !== 10 && this.codTipo !== 11 && this.codTipo !== 12 && this.codTipo !== 17){
+          this.disco = null
+        }
+        if(this.codTipo !== 13){
+          this.lumenes = null
+        }
+        if(this.codTipo !== 25){
+          this.va = null
+        }
+      },
       //Función que permite editar un equipo algunos datos son requeridos se usa Vualidate ($v.) para verificar si cumplen las condiciones
       EditarEquipo(){
+        this.transformarNull()
         let config = {
           headers: {
             token: this.token
@@ -1006,7 +1181,7 @@ export default {
         }
         this.$v.$touch()
         if(!this.$v.codigo.$invalid && !this.$v.modelo.$invalid && !this.$v.serie.$invalid && !this.$v.condicion.$invalid){
-          this.axios.put(`api/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca}, config)
+          this.axios.put(`api/actualizaEquipo/${this.corr}`, {codEquipo: this.codigo, modelo: this.modelo, serie: this.serie, estado: this.estado, condicion: this.condicion, tipoEquipo: this.tipo, nomMarca: this.marca, va: this.va, compañia: this.compañia, pulgadas: this.pulgadas, mac: this.mac, procesador: this.procesador, ram: this.ram, discoDuro: this.disco, imei: this.imei, capacidad: this.capacidad, lumenes: this.lumenes}, config)
             .then(res => {
               if(!res.data.sqlMessage){
                 Swal.fire(
