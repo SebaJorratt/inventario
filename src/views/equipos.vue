@@ -232,7 +232,7 @@
                     </div>
                   </b-col>
                 </b-row>
-                <b-row v-if="(codTipo > 0 && codTipo < 6) || (codTipo > 6 && codTipo < 14) || (codTipo > 15 && codTipo < 18) || (codTipo == 21) || (codTipo > 24 && codTipo < 27)">
+                <b-row v-if="(codTipo > 0 && codTipo < 6) || (codTipo > 6 && codTipo < 14) || (codTipo > 15 && codTipo < 18) || (codTipo == 21) || (codTipo > 24 && codTipo < 28)">
                   <b-col cols="12" md="6" v-if="codTipo == 2 || (codTipo > 9 && codTipo < 13) || codTipo == 17 || codTipo == 21">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Memoria RAM Gb</label>
@@ -729,6 +729,7 @@ export default {
           this.va = 0;
         }
       },
+      //Función que permite exportar las tablas a un excel 
       exportar(num) {
         let data = [];
         var filename = "planilla";
@@ -809,6 +810,7 @@ export default {
         }else{
           this.corrEqp = id;
         }
+        console.log(this.corrEqp)
         //Llamamos a la función que nos permite cargar los datos del equipo a editar
         this.obtenerEqpEditar(this.corrEqp)
       },
@@ -1316,11 +1318,14 @@ export default {
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
+        console.log(codigoEquipo)
         this.codEquipoExportar = codigoEquipo
         this.nomEquipoExportar = modelo
         this.tipoExportar = tipo
       },
       createDoc() {
+        this.$v.$touch()
+        if(!this.$v.tipoExportar.$invalid && !this.$v.clasificacionExportar.$invalid && !this.$v.ubicacionExportar.$invalid && !this.$v.Introduccion.$invalid && !this.$v.objetivo.$invalid && !this.$v.deficiencias.$invalid  && !this.$v.Direccion.$invalid && !this.$v.observaciones.$invalid){
             var dt = this.convertDateMysql(new Date())
             var exportar = {tipo: this.tipoExportar, clasificacion: this.clasificacionExportar, ubicacion: this.ubicacionExportar, encargado: this.duenoExportar, introduccion: this.Introduccion, objetivo: this.objetivo, deficiencias: this.deficiencias, usuario: this.Usuario, direccion: this.Direccion}
             var datosUsuarioEqp = {nomEquipo: this.nomEquipoExportar, codigo: this.codEquipoExportar, redactado: this.redactado, revisado: this.revisado, aprobado: this.aprobado, observaciones: this.observaciones, estadoExportar: this.estadoExportar, ubicacion: this.ubicacion}
@@ -1363,10 +1368,13 @@ export default {
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     });
                     // Output the document using Data-URI
-                    saveAs(out, "InformeBaja" + this.codEquipoExportar + ".docx");
+                    saveAs(out, "InformeBaja" + datosUsuarioEqp.codigo + ".docx");
                 }
             );
+        }else{
+          this.alerta('danger', 'No se ha logrado generar el informe de baja, asegurese de que todos los campos esten ingresados correctamente.')
         }
+      }
     },
     //Prepara las tablas como Datatables de JQuery
     async mounted(){

@@ -91,7 +91,7 @@
                     </div>
                   </b-col>
                 </b-row>
-                <b-row v-if="(codTipo > 0 && codTipo < 6) || (codTipo > 6 && codTipo < 14) || (codTipo > 15 && codTipo < 18) || (codTipo == 21) || (codTipo > 24 && codTipo < 27)">
+                <b-row v-if="(codTipo > 0 && codTipo < 6) || (codTipo > 6 && codTipo < 14) || (codTipo > 15 && codTipo < 18) || (codTipo == 21) || (codTipo > 24 && codTipo < 28)">
                   <b-col cols="12" md="6" v-if="codTipo == 2 || (codTipo > 9 && codTipo < 13) || codTipo == 17 || codTipo == 21">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Memoria RAM Gb</label>
@@ -277,7 +277,7 @@ export default {
           this.imei = null
           this.compañia = null
         }
-        if(this.codTipo == 5 && this.codTipo == 9 && this.codTipo == 21){
+        if(this.codTipo !== 5 && this.codTipo !== 9 && this.codTipo !== 21){
           this.capacidad = null
         }
         if(this.codTipo !== 2 && this.codTipo !== 10 && this.codTipo !== 11 && this.codTipo !== 12 && this.codTipo !== 17){
