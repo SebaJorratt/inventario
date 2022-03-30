@@ -73,7 +73,7 @@
                   </b-col>
                  </b-row>
                  <b-row>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
                       <input type="text" class="form-control" id="codFuncionarioAgrega" aria-describedby="emailHelp" v-model="$v.codigoFuncionarioAgregar.$model">
@@ -87,11 +87,15 @@
                       <p class="text-danger" v-if="$v.nomFuncionarioAgregar.$error">Es necesario ingresar un nombre mínimos 10 caracteres</p>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="3">
                     <label for="exampleInputEmail1" class="form-label">Dependencia</label>
-                    <select class="form-control" v-model="dependenciaAgregar">
-                      <option v-for="i in dependencias" :key="i.nomJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
+                    <select class="form-control" @change="cambiaJardin()" v-model="dependenciaAgregar">
+                      <option v-for="i in dependencias" :key="i.codJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
                     </select>
+                  </b-col>
+                  <b-col cols="12" md="2">
+                    <label for="exampleInputEmail1" class="form-label">Codigo Jardín</label>
+                    <input disabled type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="codigoJardinAgregar">
                   </b-col>
                 </b-row>
                   <b-row>
@@ -133,7 +137,7 @@
           <div class="card" v-if="pestaña === 'editar'" style="border-color: black;">
                <div class="card-body">
                  <b-row>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Codigo Funcionario</label>
                       <input type="text" class="form-control" id="codFuncionarioEdita" aria-describedby="emailHelp" v-model="$v.codigoFuncionario.$model">
@@ -147,11 +151,15 @@
                       <p class="text-danger" v-if="$v.nomFuncionario.$error">Es necesario ingresar un nombre mínimos 10 caracteres</p>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="3">
                     <label for="exampleInputEmail1" class="form-label">Dependencia</label>
-                    <select class="form-control" v-model="dependenciaEditar">
-                      <option v-for="i in dependencias" :key="i.nomJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
+                    <select class="form-control" @change="cambiaJardinEditar()" v-model="dependenciaEditar">
+                      <option v-for="i in dependencias" :key="i.codJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
                     </select>
+                  </b-col>
+                  <b-col cols="12" md="2">
+                    <label for="exampleInputEmail1" class="form-label">Codigo Jardín</label>
+                    <input disabled type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="codigoJardin">
                   </b-col>
                 </b-row>
                   <b-row>
@@ -319,6 +327,7 @@ export default {
         rutAgregar: '',
         dependenciaAgregar: '',
         encargadoAgregar: 1,
+        codigoJardinAgregar: '',
         //Variables para editar un funcionario con v-model
         codigoEditar: '',
         codigoFuncionario: '',
@@ -326,6 +335,7 @@ export default {
         correo: '',
         rut: '',
         dependenciaEditar: '',
+        codigoJardin: '',
         encargadoEditar: 1,
         //Variables de las alertas
         dismissSecs: 5,
@@ -414,6 +424,7 @@ export default {
           .then(res => {
             this.dependencias = res.data;
             this.dependenciaAgregar = res.data[0].nomJardin
+            this.codigoJardinAgregar = res.data[0].codJardin
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar a las dependencias');
@@ -529,6 +540,14 @@ export default {
         this.pestaña = 'funcionarios'
         this.listarFuncionarios();
       }, 
+      cambiaJardin(){
+        const index = this.dependencias.findIndex(item => item.nomJardin == this.dependenciaAgregar);
+        this.codigoJardinAgregar = this.dependencias[index].codJardin
+      },
+      cambiaJardinEditar(){
+        const index = this.dependencias.findIndex(item => item.nomJardin == this.dependenciaEditar);
+        this.codigoJardin = this.dependencias[index].codJardin
+      },
       //Carga los datos de un funcionario que se va a editar
       cargarFuncionario(){
         let config = {
@@ -545,6 +564,7 @@ export default {
             this.encargadoEditar = res.data[0].encargado
             const index = this.dependencias.findIndex(item => item.codJardin == res.data[0].codJardin);
             this.dependenciaEditar = this.dependencias[index].nomJardin
+            this.codigoJardin = res.data[0].codJardin
           })
           .catch(e => {
             Swal.fire({

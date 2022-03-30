@@ -332,7 +332,7 @@
                  <b-row>
                   <b-col cols="12" md="2">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Numero del equipo</label>
+                      <label for="exampleInputEmail1" class="form-label">Numero Equipo</label>
                       <input disabled type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.numero.$model">
                     </div>
                   </b-col>
@@ -342,15 +342,19 @@
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="$v.zona.$model">
                     </div>
                   </b-col>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Nombre del Jardin</label>
-                      <select class="form-control" v-model="$v.nombre.$model" id="nomJardin">
-                        <option v-for="i in nombres" :key="i.nomJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
+                      <select class="form-control" @change="cambiaJardin()" v-model="$v.nombre.$model" id="nomJardin">
+                        <option v-for="i in nombres" :key="i.codJardin" :value="i.nomJardin">{{i.nomJardin}}</option>
                       </select>
                     </div>
                   </b-col>
-                  <b-col cols="12" md="4">
+                  <b-col cols="12" md="2">
+                    <label for="exampleInputEmail1" class="form-label">Codigo Jardín</label>
+                    <input disabled type="text" class="form-control" id="nomFuncionarioAgrega" aria-describedby="emailHelp" v-model="codigoJardin">
+                  </b-col>
+                  <b-col cols="12" md="3">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
                       <select class="form-control" v-model="$v.dueño.$model">
@@ -596,7 +600,6 @@ export default {
       return {
         //Listas utilizadas para el manejo de tablas
         equiposAct: [],
-        corrEquipos: [],
         equiposBuenEstado: [],
         equiposMalEstado: [],
         historial: [],
@@ -636,6 +639,7 @@ export default {
         numero: '',
         zona: '',
         nombre: '',
+        codigoJardin: '',
         //Arreglo para añadir los datos a los select
         nombres: [],
         dueño: '',
@@ -806,11 +810,10 @@ export default {
         //Obtenemos el correlativo del equipo, si estamos en la vista de Equipos con dueño (activo=true) tendremos que buscarlo en el arreglo paralelo por la posición
         if(activo){
           const index = this.equiposAct.findIndex(item => item.codHistorial == id);
-          this.corrEqp = this.corrEquipos[index]
+          this.corrEqp = this.equiposAct[index].corrEquipo
         }else{
           this.corrEqp = id;
         }
-        console.log(this.corrEqp)
         //Llamamos a la función que nos permite cargar los datos del equipo a editar
         this.obtenerEqpEditar(this.corrEqp)
       },
@@ -825,7 +828,7 @@ export default {
         //Obtenemos el correlativo del equipo, si estamos en la vista de Equipos con dueño (activo=true) tendremos que buscarlo en el arreglo paralelo por la posición
         if(activo){
           const index = this.equiposAct.findIndex(item => item.codHistorial == id);
-          this.corr = this.corrEquipos[index]
+          this.corr = this.equiposAct[index].corrEquipo
         }else{
           this.corr = id;
         }
@@ -966,7 +969,6 @@ export default {
               .then(res => {
                 const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
                 this.equiposAct.splice(index, 1)
-                this.corrEquipos.splice(index, 1)
                 Swal.fire(
                   'Se ha quitado un equipo al funcionario!',
                   'Seleccione Ok para continuar',
@@ -1006,17 +1008,10 @@ export default {
         this.axios.get('api/equiposConDueno', config)
           .then(res => {
             this.equiposAct = res.data;
-            this.llenarCorrelativos();
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar los equipos con Dueño');
           })
-      },
-      //Llena el arreglo paralelo de correlativos de Equipos con dueño
-      llenarCorrelativos(){
-        for(var i = 0; i<this.equiposAct.length; i++){
-          this.corrEquipos.push(this.equiposAct[i].corrEquipo)
-        }
       },
       //Define la vista de Equipos sin un dueño actual
       EquiposBuenEstado(){
@@ -1210,8 +1205,10 @@ export default {
       //Se reinicia la ruta para regresar a la pantalla Principal
       Volver(){
         $('#historialEquipo').DataTable().destroy();
+        $('#tablaConDueño').DataTable()
         this.pestaña = 'equiposact'
         this.botones = 'si'
+        this.equiposAct = []
         this.listarEquiposAct();
       },
       //Determina la vista para enviar un equipo a un nuevo dueño, recibe la id del equipo en cuestion
@@ -1234,10 +1231,15 @@ export default {
           .then(res => {
             this.nombres = res.data;
             this.nombre = res.data[0].nomJardin
+            this.codigoJardin = res.data[0].codJardin
           })
           .catch(e => {
             this.alerta('danger', 'No se han podido cargar los nombres de los jardines');
         })
+      },
+      cambiaJardin(){
+        const index = this.nombres.findIndex(item => item.nomJardin == this.nombre);
+        this.codigoJardin = this.nombres[index].codJardin
       },
       //Carga todos los funcionarios de la base de datos
       listarDueños(){
