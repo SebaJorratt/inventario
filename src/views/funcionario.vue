@@ -645,7 +645,6 @@ export default {
             this.axios.put(`api/actualizaHistorial/${id}`, {fecha: dt}, config)
               .then(res => {
                 const index = this.equiposAct.findIndex(item => item.codHistorial == res.data);
-                console.log(index);
                 this.equiposAct.splice(index, 1)
                 Swal.fire(
                   'Se ha quitado un equipo al funcionario!',

@@ -358,7 +358,7 @@
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Dueño del equipo</label>
                       <select class="form-control" v-model="$v.dueño.$model">
-                        <option v-for="i in dueños" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
+                        <option v-for="i in dueñosJardinLista" :key="i.nombre" :value="i.nombre">{{i.nombre}}</option>
                       </select>
                     </div>
                   </b-col>
@@ -640,16 +640,17 @@ export default {
         zona: '',
         nombre: '',
         codigoJardin: '',
+        dueño: '',
         //Arreglo para añadir los datos a los select
         nombres: [],
-        dueño: '',
-        dueños: [],
+        dueñosJardinLista: [],
         //Variables de las alertas
         dismissSecs: 5,
         dismissCountDown: 0,
         mensaje: {color: '', texto: ''},
         activo: true,
         //VARIABLES DE EXPORTACION
+        dueños: [],
         tipoExportar: '',
         clasificacionExportar: '',
         ubicacionExportar: '',
@@ -1219,6 +1220,7 @@ export default {
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
+        this.dueñosJardin();
       },
       //Carga todos los jardines de la base de datos
       nombresJardin(){
@@ -1237,9 +1239,25 @@ export default {
             this.alerta('danger', 'No se han podido cargar los nombres de los jardines');
         })
       },
+      dueñosJardin(){
+        let config = {
+          headers: {
+            token: this.token
+          }
+        }
+        this.axios.get(`api/funcionariosDep/${this.codigoJardin}`, config)
+          .then(res => {
+              this.dueñosJardinLista = res.data;
+              this.dueño = res.data[0].nombre
+            })
+            .catch(e => {
+              this.alerta('danger', 'No se han podido cargar los funcionarios del jardín ' + this.nombre);
+          })
+      },
       cambiaJardin(){
         const index = this.nombres.findIndex(item => item.nomJardin == this.nombre);
         this.codigoJardin = this.nombres[index].codJardin
+        this.dueñosJardin()
       },
       //Carga todos los funcionarios de la base de datos
       listarDueños(){
@@ -1320,7 +1338,6 @@ export default {
         $('#tablaSinDueño').DataTable().destroy();
         $('#tablaBajas').DataTable().destroy();
         $('#tablaConDueño').DataTable().destroy();
-        console.log(codigoEquipo)
         this.codEquipoExportar = codigoEquipo
         this.nomEquipoExportar = modelo
         this.tipoExportar = tipo
