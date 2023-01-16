@@ -4,8 +4,6 @@
             <b-navbar toggleable="md" type="dark" variant="danger">
                 <b-container>
                     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-                    
-                    <router-link to="/menu"> <img src="../assets/logoborde.png" alt="" width="50px" class="iconJunji">  <b-navbar-brand > Inventario |</b-navbar-brand></router-link> 
                      <b-collapse id="nav-collapse" is-nav>
                          <b-navbar-nav>
                             <b-nav-item :to="{name:'equipos'}" >Lista de equipos</b-nav-item>
