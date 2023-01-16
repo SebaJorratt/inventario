@@ -2,10 +2,6 @@
     <div class="wrapper fadeInDown">
             <div class="card-body" id="formContent">
               <br>
-              <div >
-                  <img src="../assets/junji-2.png" alt="" width="150px" class="imagen">  
-              </div>
-              <br>
               <form @submit.prevent="submit">
                 <input type="email" id="login" class="second" name="login" placeholder="Ingrese su email" v-model="$v.correo.$model" :class="{'is-invalid': $v.correo.$error}">
                 <p class="text-danger" v-if="$v.correo.$error">Por favor ingrese un correo</p>
