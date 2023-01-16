@@ -1,4 +1,4 @@
-# inventario
+# inventario que permite la gestión de de establecimientos
 
 ## Project setup
 ```
